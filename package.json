@@ -1,5 +1,5 @@
 {
-  "name": "screeps-starter-rust",
+  "name": "kung-fu-screeps",
   "version": "0.1.0",
   "description": "",
   "files": [
@@ -11,13 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rustyscreeps/screeps-starter-rust.git"
+    "url": "git+https://github.com/jakewaldrip/kung-fu-screeps.git"
   },
   "author": "",
   "bugs": {
-    "url": "https://github.com/rustyscreeps/screeps-starter-rust/issues"
+    "url": "git+https://github.com/jakewaldrip/kung-fu-screeps.git"
   },
-  "homepage": "https://github.com/rustyscreeps/screeps-starter-rust",
+  "homepage": "https://github.com/jakewaldrip/kung-fu-screeps.git",
   "screeps_bot": true,
   "dependencies": {
     "fastestsmallesttextencoderdecoder-encodeinto": "^1.0.22"

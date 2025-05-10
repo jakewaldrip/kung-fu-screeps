@@ -22,9 +22,15 @@ checksum = "1628fb46dfa0b37568d12e5edd512553eccf6a22a78e8bde00bb4aed84d5bdbf"
 
 [[package]]
 name = "cc"
+<<<<<<< HEAD
 version = "1.2.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32db95edf998450acc7881c932f94cd9b05c87b4b2599e8bab064753da4acfd1"
+=======
+version = "1.2.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8691782945451c1c383942c4874dbe63814f61cb57ef773cda2972682b7bb3c0"
+>>>>>>> 2678c1b0c318b0d2e2e9abd7ee49857ca902ee2f
 dependencies = [
  "shlex",
 ]
@@ -93,6 +99,22 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
+=======
+name = "kung-fu-screeps"
+version = "0.0.0"
+dependencies = [
+ "fern",
+ "js-sys",
+ "log",
+ "screeps-game-api",
+ "wasm-bindgen",
+ "wasm-bindgen-test",
+ "web-sys",
+]
+
+[[package]]
+>>>>>>> 2678c1b0c318b0d2e2e9abd7ee49857ca902ee2f
 name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -199,6 +221,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "screeps-starter-rust"
 version = "0.0.0"
 dependencies = [
@@ -212,6 +235,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> 2678c1b0c318b0d2e2e9abd7ee49857ca902ee2f
 name = "serde"
 version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
