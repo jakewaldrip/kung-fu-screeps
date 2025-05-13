@@ -2,11 +2,13 @@
 
 use log::*;
 use memory::memory_manager::run_memory_manager;
-use screeps::{game::{self}};
+use screeps::game::{self};
+use spawn::spawn_manager::run_spawn_manager;
 use wasm_bindgen::prelude::*;
 
 mod logging;
 mod memory;
+mod spawn;
 
 static INIT_LOGGING: std::sync::Once = std::sync::Once::new();
 
@@ -21,8 +23,10 @@ pub fn game_loop() {
         logging::setup_logging(logging::Info);
     });
 
-    run_memory_manager();
-
     debug!("Loop running! CPU: {}", game::cpu::get_used());
+
+    run_memory_manager();
+    run_spawn_manager();
+
     info!("Done! cpu: {}", game::cpu::get_used())
 }
