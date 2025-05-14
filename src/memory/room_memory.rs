@@ -36,4 +36,11 @@ impl RoomMemory {
             }
         }
     }
+
+    pub fn set_room_state(room: Room, room_state: RoomState) {
+        let mut current_room_memory: RoomMemory =
+            serde_wasm_bindgen::from_value(room.memory()).unwrap();
+        current_room_memory.room_state = room_state;
+        room.set_memory(&serde_wasm_bindgen::to_value(&current_room_memory).unwrap());
+    }
 }
