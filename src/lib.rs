@@ -2,12 +2,14 @@
 
 use log::*;
 use memory::memory_manager::run_memory_manager;
+use room::room_manager::run_room_manager;
 use screeps::game::{self};
 use spawn::spawn_manager::run_spawn_manager;
 use wasm_bindgen::prelude::*;
 
 mod logging;
 mod memory;
+mod room;
 mod spawn;
 
 static INIT_LOGGING: std::sync::Once = std::sync::Once::new();
@@ -27,6 +29,7 @@ pub fn game_loop() {
 
     run_memory_manager();
     run_spawn_manager();
+    run_room_manager();
 
     info!("Done! cpu: {}", game::cpu::get_used())
 }
