@@ -1,11 +1,11 @@
 use log::info;
-use screeps::game;
 
-use crate::room::room_api::set_room_state;
+use crate::{memory::memory_api::get_owned_rooms, room::room_api::set_room_state};
 
 pub fn run_room_manager() {
     info!("Running room manager");
-    for room in game::rooms().values() {
+    let owned_rooms = get_owned_rooms();
+    for room in owned_rooms {
         info!("Running room {}", room.name());
         set_room_state(room);
     }
