@@ -1,5 +1,6 @@
 #![allow(deprecated)]
 
+use creep::creep_manager::run_creep_manager;
 use log::*;
 use memory::memory_manager::run_memory_manager;
 use room::room_manager::run_room_manager;
@@ -7,6 +8,7 @@ use screeps::game::{self};
 use spawn::spawn_manager::run_spawn_manager;
 use wasm_bindgen::prelude::*;
 
+mod creep;
 mod logging;
 mod memory;
 mod room;
@@ -28,8 +30,9 @@ pub fn game_loop() {
     debug!("Loop running! CPU: {}", game::cpu::get_used());
 
     run_memory_manager();
-    run_spawn_manager();
     run_room_manager();
+    run_spawn_manager();
+    run_creep_manager();
 
     info!("Done! cpu: {}", game::cpu::get_used())
 }
