@@ -16,7 +16,7 @@ pub enum RoomState {
 }
 
 impl RoomMemory {
-    pub fn init_room_memory(room: Room) {
+    pub fn init(room: Room) {
         let room_memory = Self {
             version: ROOM_MEMORY_VERSION,
             room_state: RoomState::BOOTSTRAP,
