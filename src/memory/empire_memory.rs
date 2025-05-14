@@ -1,7 +1,5 @@
 use js_sys::{JsString, Reflect};
-use screeps::Room;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::JsValue;
 
 const EMPIRE_MEMORY_VERSION: u32 = 1;
 
