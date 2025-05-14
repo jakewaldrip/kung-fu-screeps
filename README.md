@@ -4,6 +4,7 @@
 Blazingly fast [Screeps](https://screeps.com) bot implemented in Rust.
 
 ## Quickstart:
+Note: Requires rust nightly
 
 ```sh
 # Install wasm-pack
