@@ -1,4 +1,4 @@
-use screeps::{Creep, SharedCreepProperties};
+use screeps::Creep;
 
 use super::creep_behavior::CreepBehavior;
 
@@ -14,8 +14,6 @@ impl MinerBehavior {
 
 impl CreepBehavior for MinerBehavior {
     fn say(&self) -> () {
-        self.creep
-            .say(&format!("My name is {}", self.creep.name()), true)
-            .unwrap();
+        self.creep.say(&format!("Me Miner"), true).unwrap();
     }
 }
