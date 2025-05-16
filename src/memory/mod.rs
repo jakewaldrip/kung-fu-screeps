@@ -1,3 +1,4 @@
+pub mod creep_memory;
 pub mod empire_memory;
 pub mod memory_api;
 pub mod memory_manager;

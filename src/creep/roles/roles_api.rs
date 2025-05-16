@@ -1,9 +1,11 @@
 use screeps::Creep;
+use serde::{Deserialize, Serialize};
 
 use crate::creep::roles::{behavior::miner::MinerBehavior, data::miner::MinerData};
 
 use super::{behavior::creep_behavior::CreepBehavior, data::creep_data::CreepData};
 
+#[derive(Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
 pub enum Roles {
     Miner,
 }

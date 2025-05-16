@@ -16,6 +16,6 @@ pub fn run_memory_manager() {
     EmpireMemory::init();
     let owned_rooms = get_owned_rooms();
     for room in owned_rooms {
-        RoomMemory::init(room);
+        RoomMemory::init(&room);
     }
 }

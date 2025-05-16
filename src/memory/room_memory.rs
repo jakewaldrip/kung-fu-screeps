@@ -6,7 +6,7 @@ const ROOM_MEMORY_VERSION: u32 = 1;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RoomMemory {
     version: u32,
-    room_state: RoomState,
+    pub room_state: RoomState,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -16,7 +16,7 @@ pub enum RoomState {
 }
 
 impl RoomMemory {
-    pub fn init(room: Room) {
+    pub fn init(room: &Room) {
         let room_memory = Self {
             version: ROOM_MEMORY_VERSION,
             room_state: RoomState::BOOTSTRAP,
@@ -37,10 +37,14 @@ impl RoomMemory {
         }
     }
 
-    pub fn set_room_state(room: Room, room_state: RoomState) {
+    pub fn set_room_state(room: &Room, room_state: RoomState) {
         let mut current_room_memory: RoomMemory =
             serde_wasm_bindgen::from_value(room.memory()).unwrap();
         current_room_memory.room_state = room_state;
         room.set_memory(&serde_wasm_bindgen::to_value(&current_room_memory).unwrap());
+    }
+
+    pub fn get(room: &Room) -> Self {
+        serde_wasm_bindgen::from_value(room.memory()).unwrap()
     }
 }
