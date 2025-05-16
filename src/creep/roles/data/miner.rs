@@ -1,7 +1,7 @@
 use rand::Rng;
 use screeps::{game, Part, Room};
 
-use crate::creep::roles::roles_api::Roles;
+use crate::{creep::roles::roles_api::Roles, memory::creep_memory::CreepMemory};
 
 use super::creep_data::CreepData;
 
@@ -27,11 +27,14 @@ impl CreepData for MinerData {
         format!("{}_{}_{}_{}", Roles::Miner, room_name, game_time, rand_num)
     }
 
-    fn get_memory(&self, room_name: String) -> crate::memory::creep_memory::CreepMemory {
-        todo!()
+    fn get_memory(&self, home_room: String) -> CreepMemory {
+        CreepMemory {
+            home_room,
+            role: Roles::Miner,
+        }
     }
 
-    fn get_body(&self, room: &Room) -> Vec<Part> {
-        todo!()
+    fn get_body(&self, _room: &Room) -> Vec<Part> {
+        vec![Part::Move, Part::Work, Part::Work]
     }
 }
