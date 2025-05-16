@@ -19,7 +19,7 @@ pub fn clean_memory() {
             let creep_name = String::from(creep_name_js.dyn_ref::<JsString>().unwrap());
 
             if !living_creeps.contains(&creep_name) {
-                info!("deleting memory for dead creep {}", creep_name);
+                info!("Deleting memory for dead creep {}", creep_name);
                 let _ = Reflect::delete_property(&memory_creeps, &creep_name_js);
             }
         }
@@ -27,7 +27,7 @@ pub fn clean_memory() {
 
     // Remove dead rooms from memory
     let active_rooms: HashSet<RoomName> = game::rooms().keys().into_iter().collect();
-    if let Ok(memory_rooms) = Reflect::get(&screeps::memory::ROOT, &JsString::from("creeps")) {
+    if let Ok(memory_rooms) = Reflect::get(&screeps::memory::ROOT, &JsString::from("rooms")) {
         let memory_rooms: Object = memory_rooms.unchecked_into();
         for room_name_js in Object::keys(&memory_rooms).iter() {
             let room_name = String::from(room_name_js.dyn_ref::<JsString>().unwrap());

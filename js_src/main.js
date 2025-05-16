@@ -3,7 +3,7 @@ import 'fastestsmallesttextencoderdecoder-encodeinto/EncoderDecoderTogether.min.
 
 import * as bot from '../pkg/kung_fu_screeps.js';
 // replace this with the name of your module
-const MODULE_NAME = "kung-fu-screeps";
+const MODULE_NAME = "kung_fu_screeps";
 const BUCKET_BOOT_THRESHOLD = 1500;
 
 // This provides the function `console.error` that wasm_bindgen sometimes expects to exist,

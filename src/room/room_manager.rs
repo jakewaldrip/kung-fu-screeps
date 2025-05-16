@@ -3,7 +3,6 @@ use log::info;
 use crate::{memory::memory_api::get_owned_rooms, room::room_api::set_room_state};
 
 pub fn run_room_manager() {
-    info!("Running room manager");
     let owned_rooms = get_owned_rooms();
     for room in owned_rooms {
         info!("Running room {}", room.name());
