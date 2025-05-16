@@ -1,4 +1,3 @@
-use rand::Rng;
 use screeps::{game, Part, Room};
 
 use crate::{creep::roles::roles_api::Roles, memory::creep_memory::CreepMemory};
@@ -21,10 +20,8 @@ impl CreepData for MinerData {
             game_time_raw[split_pos..].into()
         };
 
-        let mut rng = rand::thread_rng();
-        let rand_num = rng.gen_range(1..=999).to_string();
-
-        format!("{}_{}_{}_{}", Roles::Miner, room_name, game_time, rand_num)
+        // TODO handle issue of same role spawning in same room on same tick
+        format!("{}_{}_{}", Roles::Miner, room_name, game_time)
     }
 
     fn get_memory(&self, home_room: String) -> CreepMemory {
