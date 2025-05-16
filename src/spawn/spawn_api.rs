@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 
-use screeps::{game, Room};
+use screeps::Room;
 
 use crate::{
     creep::roles::roles_api::Roles,
-    memory::{creep_memory::CreepMemory, room_memory::RoomState},
+    memory::room_memory::{RoomMemory, RoomState},
 };
 
-pub fn get_spawn_limits(_room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
+use super::spawn_utils::get_living_creep_counts;
+
+fn get_spawn_limits(_room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
     let mut spawn_limits: HashMap<Roles, u8> = HashMap::new();
     match room_state {
         RoomState::BOOTSTRAP => spawn_limits.insert(Roles::Miner, 2),
@@ -17,18 +19,23 @@ pub fn get_spawn_limits(_room: &Room, room_state: &RoomState) -> HashMap<Roles, 
     spawn_limits
 }
 
-pub fn get_living_creep_counts(room: &Room) -> HashMap<Roles, u8> {
-    let mut creep_count: HashMap<Roles, u8> = HashMap::new();
-    let room_name = room.name().to_string();
-    for creep in game::creeps().values() {
-        let creep_memory = CreepMemory::get(&creep);
-        let home_room = creep_memory.home_room;
-        let creep_role = creep_memory.role;
+pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
+    let room_memory = RoomMemory::get(&room);
+    let room_state = room_memory.room_state;
 
-        if room_name == home_room {
-            *creep_count.entry(creep_role.clone()).or_insert(0) += 1;
-        }
+    // Get spawn limits
+    let spawn_limits = get_spawn_limits(&room, &room_state);
+    let miner_limit = spawn_limits.get(&Roles::Miner).unwrap();
+
+    // Get creep counts
+    let creep_counts = get_living_creep_counts(&room);
+    let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
+
+    // TODO, move to get next role concept
+    // Spawn creeps
+    if *miner_count < *miner_limit {
+        return Some(Roles::Miner);
     }
 
-    creep_count
+    None
 }

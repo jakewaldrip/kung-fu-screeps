@@ -1,3 +1,9 @@
+use screeps::{Part, Room};
+
+use crate::memory::creep_memory::CreepMemory;
+
 pub trait CreepData {
-    fn get_name(&self) -> String;
+    fn get_name(&self, room_name: String) -> String;
+    fn get_memory(&self, room_name: String) -> CreepMemory;
+    fn get_body(&self, room: &Room) -> Vec<Part>;
 }

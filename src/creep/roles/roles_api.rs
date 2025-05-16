@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use screeps::Creep;
 use serde::{Deserialize, Serialize};
 
@@ -8,6 +10,14 @@ use super::{behavior::creep_behavior::CreepBehavior, data::creep_data::CreepData
 #[derive(Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Clone)]
 pub enum Roles {
     Miner,
+}
+
+impl Display for Roles {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Roles::Miner => write!(f, "Miner"),
+        }
+    }
 }
 
 pub fn get_creep_data_impl(role: &Roles) -> Option<Box<dyn CreepData>> {

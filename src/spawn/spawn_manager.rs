@@ -1,10 +1,9 @@
-use log::info;
-use screeps::{game, Room};
+use log::{info, warn};
+use screeps::{game, Room, SpawnOptions};
 
 use crate::{
-    creep::roles::roles_api::Roles,
-    memory::{memory_api::get_owned_rooms, room_memory::RoomMemory},
-    spawn::spawn_api::{get_living_creep_counts, get_spawn_limits},
+    creep::roles::roles_api::get_creep_data_impl, memory::memory_api::get_owned_rooms,
+    spawn::spawn_api::get_next_role_to_spawn,
 };
 
 pub fn run_spawn_manager() {
@@ -16,26 +15,26 @@ pub fn run_spawn_manager() {
 }
 
 pub fn run_spawns_for_room(room: Room) {
-    info!("Running spawn for room {}", room.name());
-    let room_memory = RoomMemory::get(&room);
-    let room_state = room_memory.room_state;
-    let _spawn_for_room = game::spawns().get("Spawn1".into()).unwrap();
+    let room_name = room.name().to_string();
+    let spawn_for_room = game::spawns().get("Spawn1".into()).unwrap();
+    info!("Running spawn for room {}", room_name);
 
-    // Get spawn limits
-    let spawn_limits = get_spawn_limits(&room, &room_state);
-    let miner_limit = spawn_limits.get(&Roles::Miner).unwrap();
+    if let Some(next_role_to_spawn) = get_next_role_to_spawn(&room) {
+        let creep_data_impl = get_creep_data_impl(&next_role_to_spawn).unwrap();
+        let creep_body = creep_data_impl.get_body(&room);
+        let body_cost = creep_body.iter().map(|p| p.cost()).sum();
 
-    // Get creep counts
-    let creep_counts = get_living_creep_counts(&room);
-    let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
+        if room.energy_available() >= body_cost {
+            let creep_name = creep_data_impl.get_name(room_name.clone());
+            let creep_memory = creep_data_impl.get_memory(room_name.clone());
+            let spawn_options = SpawnOptions::new().memory(creep_memory.to_js());
 
-    // TODO, move to get next role concept
-    // Spawn creeps
-    if *miner_count < *miner_limit {
-        // get body
-        // get memory
-        // get name
-        //
-        // spawn miner
+            let spawn_result =
+                spawn_for_room.spawn_creep_with_options(&creep_body, &creep_name, &spawn_options);
+            match spawn_result {
+                Ok(_) => info!("Spawned new creep"),
+                Err(err) => warn!("Failed to spawn {}: {}", next_role_to_spawn, err),
+            }
+        }
     }
 }

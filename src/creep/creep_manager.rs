@@ -8,10 +8,7 @@ pub fn run_creep_manager() {
         info!("Running creep {}", creep.name());
 
         let role: Roles = Roles::Miner;
-        let creep_behavior = get_creep_behavior_impl(&role, creep).unwrap();
-        let creep_data = get_creep_data_impl(&role).unwrap();
-
-        info!("Creeps name is {}", creep_data.get_name());
-        creep_behavior.say();
+        let _creep_behavior = get_creep_behavior_impl(&role, creep).unwrap();
+        let _creep_data = get_creep_data_impl(&role).unwrap();
     }
 }
