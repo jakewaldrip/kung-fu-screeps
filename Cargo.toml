@@ -1,5 +1,8 @@
 [package]
 name = "kung-fu-screeps"
+description = "Blazingly fast screeps bot"
+repository = "https://github.com/jakewaldrip/kung-fu-screeps"
+license = "MIT"
 version = "0.0.0"
 authors = []
 edition = "2021"

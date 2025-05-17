@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use screeps::Room;
+use screeps::{game, Room, StructureSpawn};
 
 use crate::{
     creep::roles::roles_api::Roles,
@@ -31,11 +31,19 @@ pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
     let creep_counts = get_living_creep_counts(&room);
     let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
 
-    // TODO, move to get next role concept
     // Spawn creeps
     if *miner_count < *miner_limit {
         return Some(Roles::Miner);
     }
 
+    None
+}
+
+pub fn get_active_spawn_for_room(room: &Room) -> Option<StructureSpawn> {
+    for spawn in game::spawns().values() {
+        if spawn.room().unwrap().name() == room.name() && spawn.spawning().is_none() {
+            return Some(spawn);
+        }
+    }
     None
 }

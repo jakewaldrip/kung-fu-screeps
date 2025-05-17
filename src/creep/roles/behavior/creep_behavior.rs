@@ -9,6 +9,6 @@ thread_local! {
 }
 
 pub trait CreepBehavior {
-    fn get_job(&self, room: &Room) -> ();
-    fn do_job(&self, room: &Room) -> ();
+    fn get_job(&self, room: &Room) -> Option<Job>;
+    fn do_job(&self, room: &Room, job: &Job) -> ();
 }
