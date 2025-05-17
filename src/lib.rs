@@ -9,6 +9,7 @@ use spawn::spawn_manager::run_spawn_manager;
 use wasm_bindgen::prelude::*;
 
 mod creep;
+mod job;
 mod logging;
 mod memory;
 mod room;
