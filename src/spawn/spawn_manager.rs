@@ -6,7 +6,7 @@ use crate::{
     spawn::spawn_api::get_next_role_to_spawn,
 };
 
-use super::spawn_api::get_active_spawn_for_room;
+use super::spawn_api::{get_active_spawn_for_room, get_creep_name_to_spawn};
 
 pub fn run_spawn_manager() {
     let owned_rooms = get_owned_rooms();
@@ -37,7 +37,7 @@ pub fn run_spawns_for_room(room: Room) {
     let body_cost = creep_body.iter().map(|p| p.cost()).sum();
 
     if room.energy_available() >= body_cost {
-        let creep_name = creep_data_impl.get_name(room_name.clone());
+        let creep_name = get_creep_name_to_spawn(&room_name, &next_role_to_spawn);
         let creep_memory = creep_data_impl.get_memory(room_name.clone());
         let spawn_options = SpawnOptions::new().memory(creep_memory.to_js());
 

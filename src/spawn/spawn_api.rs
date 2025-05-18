@@ -47,3 +47,14 @@ pub fn get_active_spawn_for_room(room: &Room) -> Option<StructureSpawn> {
     }
     None
 }
+
+pub fn get_creep_name_to_spawn(room_name: &str, role: &Roles) -> String {
+    let game_time: String = {
+        let game_time_raw = game::time().to_string();
+        let split_pos = game_time_raw.char_indices().nth_back(4).unwrap().0;
+        game_time_raw[split_pos..].into()
+    };
+
+    // TODO handle issue of same role spawning in same room on same tick
+    format!("{}_{}_{}", role, room_name, &game_time)
+}
