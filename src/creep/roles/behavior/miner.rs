@@ -21,14 +21,13 @@ impl MinerBehavior {
 
 impl CreepBehavior for MinerBehavior {
     fn get_job(&self, room: &Room) -> Option<Job> {
-        let static_mining_job = get_static_mining_job(room);
-        match static_mining_job {
-            Some(job) => {
-                creep_set_job(&self.creep, job);
-            }
-            None => warn!("Miner couldn't find static mining job"),
+        if let Some(static_mining_job) = get_static_mining_job(room) {
+            creep_set_job(&self.creep, static_mining_job);
+            return Some(static_mining_job);
         }
-        static_mining_job
+
+        warn!("Miner couldn't find static mining job");
+        None
     }
 
     fn do_job(&self, _room: &Room, job: &Job) -> () {
