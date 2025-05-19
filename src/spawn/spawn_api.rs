@@ -31,7 +31,8 @@ pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
     let creep_counts = get_living_creep_counts(&room);
     let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
 
-    // Spawn creeps
+    // Spawn Creeps
+    // TODO Handle bootstrap case, if no harvesters and boostrap spawn harvester
     if *miner_count < *miner_limit {
         return Some(Roles::Miner);
     }

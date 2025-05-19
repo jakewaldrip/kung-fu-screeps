@@ -17,6 +17,8 @@ pub fn run_spawn_manager() {
 
 pub fn run_spawns_for_room(room: Room) {
     let room_name = room.name().to_string();
+
+    // Skip states on None
     let active_spawn_for_room = match get_active_spawn_for_room(&room) {
         Some(spawn) => spawn,
         None => return,
@@ -25,6 +27,8 @@ pub fn run_spawns_for_room(room: Room) {
         Some(role) => role,
         None => return,
     };
+
+    // Error States on None
     let creep_data_impl = match get_creep_data_impl(&next_role_to_spawn) {
         Some(creep_data_impl) => creep_data_impl,
         None => {
@@ -33,6 +37,7 @@ pub fn run_spawns_for_room(room: Room) {
         }
     };
 
+    // Get creep info and spawn
     let creep_body = creep_data_impl.get_body(&room);
     let body_cost = creep_body.iter().map(|p| p.cost()).sum();
 
