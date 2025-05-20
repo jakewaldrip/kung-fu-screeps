@@ -7,6 +7,7 @@ Blazingly fast [Screeps](https://screeps.com) bot implemented in Rust.
 Note: Requires rust nightly
 
 ```sh
+# Note, these cargo installs must happen outside of the repo
 # Install wasm-pack
 cargo install wasm-pack
 
@@ -14,8 +15,8 @@ cargo install wasm-pack
 cargo install wasm-opt
 
 # Set node version to 20 (confirmed working)
-nvm install 20
-nvm use 20
+nvm install 20.0.0
+nvm use 20.0.0
 
 # Clone the repo
 git clone git@github.com:jakewaldrip/kung-fu-screeps.git

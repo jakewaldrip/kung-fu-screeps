@@ -157,7 +157,7 @@ async function run() {
     return
   }
   await output_clean();
-  const build_result = await run_wasm_pack(config.extra_options);
+  const build_result = run_wasm_pack(config.extra_options);
   if (build_result.status !== 0) {
     return
   }
