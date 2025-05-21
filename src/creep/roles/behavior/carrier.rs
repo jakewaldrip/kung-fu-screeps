@@ -1,12 +1,11 @@
 use log::warn;
 use screeps::{
-    game, Creep, HasPosition, Resource, ResourceType, Room, SharedCreepProperties, Structure,
-    StructureObject, StructureSpawn, Transferable, TransferableObject,
+    game, Creep, HasPosition, Resource, ResourceType, Room, SharedCreepProperties, Structure, StructureController, StructureObject, Transferable, TransferableObject
 };
 
 use crate::job::{
     job::{Job, JobType},
-    job_api::{get_energy_job, get_fill_spawns_job, get_fill_structures_job},
+    job_api::{get_energy_job, get_fill_structures_job, get_upgrade_controller_job},
     job_utils::creep_set_job,
 };
 
@@ -43,9 +42,9 @@ impl CreepBehavior for CarrierBehavior {
             return Some(fill_extensions_job);
         }
 
-        if let Some(fill_spawn_job) = get_fill_spawns_job(room, &self.creep) {
-            creep_set_job(&self.creep, fill_spawn_job);
-            return Some(fill_spawn_job);
+        if let Some(upgrade_controller_job) = get_upgrade_controller_job(room) {
+            creep_set_job(&self.creep, upgrade_controller_job);
+            return Some(upgrade_controller_job);
         }
 
         None
@@ -63,9 +62,9 @@ impl CreepBehavior for CarrierBehavior {
                     TransferableObject::try_from(StructureObject::from(structure));
                 do_fill_structure_job(&self.creep, &transferable_structure.unwrap());
             }
-            JobType::FillSpawn(spawn_id) => {
-                let spawn = game::get_object_by_id_typed::<StructureSpawn>(&spawn_id).unwrap();
-                do_fill_structure_job(&self.creep, &spawn);
+            JobType::UpgradeController(controller_id) => {
+                let controller = game::get_object_by_id_typed::<StructureController>(&controller_id).unwrap();
+                do_upgrade_controller_job(&self.creep, &controller);
             }
             _ => warn!(
                 "{} obtained unhandled job type: {:?}",
@@ -89,5 +88,13 @@ fn do_fill_structure_job<T: Transferable>(creep: &Creep, structure: &T) {
         let _ = creep.transfer(structure, ResourceType::Energy, None);
     } else {
         let _ = creep.move_to(structure);
+    }
+}
+
+fn do_upgrade_controller_job(creep: &Creep, controller: &StructureController) {
+    if creep.pos().in_range_to(controller.pos(), 3) {
+        let _ = creep.upgrade_controller(controller);
+    } else {
+        let _ = creep.move_to(controller);
     }
 }

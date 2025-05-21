@@ -1,11 +1,11 @@
-use screeps::{ObjectId, Resource, Source, Structure, StructureSpawn};
+use screeps::{ObjectId, Resource, Source, Structure, StructureController};
 
 #[derive(Clone, Copy, Debug)]
 pub enum JobType {
     StaticMine(ObjectId<Source>),
     GetDroppedEnergy(ObjectId<Resource>),
     FillStructure(ObjectId<Structure>),
-    FillSpawn(ObjectId<StructureSpawn>),
+    UpgradeController(ObjectId<StructureController>)
 }
 
 #[derive(Clone, Copy, Debug)]
