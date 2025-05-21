@@ -12,7 +12,7 @@ pub fn is_job_done(creep: &Creep, job: &Job) -> bool {
         JobType::StaticMine(_) => false,
         JobType::GetDroppedEnergy(resource_id) => {
             let dropped_energy = game::get_object_by_id_typed(&resource_id).unwrap();
-            dropped_energy.amount() == 0 || creep.store().get_used_capacity(None) == 0
+            dropped_energy.amount() == 0 || creep.store().get_free_capacity(None) == 0
         }
         JobType::FillStructure(structure_id) => {
             let structure = game::get_object_by_id_typed(&structure_id).unwrap();
@@ -25,6 +25,10 @@ pub fn is_job_done(creep: &Creep, job: &Job) -> bool {
         }
         JobType::UpgradeController(_) => {
             creep.store().get_used_capacity(Some(ResourceType::Energy)) == 0
+        }
+        JobType::SelfMining(source_id) => {
+            let source = game::get_object_by_id_typed(&source_id).unwrap();
+            creep.store().get_free_capacity(Some(ResourceType::Energy)) == 0 || source.energy() == 0
         }
     }
 }
@@ -41,6 +45,17 @@ pub fn get_static_mining_job(room: &Room) -> Option<Job> {
     };
 
     static_mining_job
+}
+
+pub fn get_mining_job(_room: &Room, creep: &Creep) -> Option<Job> {
+    let mining_job = match creep.pos().find_closest_by_path(find::SOURCES_ACTIVE, None) {
+        Some(source) => Some(Job {
+            job_type: JobType::SelfMining(source.id()),
+        }),
+        None => None,
+    };
+
+    mining_job
 }
 
 pub fn get_energy_job(_room: &Room, creep: &Creep) -> Option<Job> {

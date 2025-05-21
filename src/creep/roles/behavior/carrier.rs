@@ -1,12 +1,19 @@
 use log::warn;
 use screeps::{
-    game, Creep, HasPosition, Resource, ResourceType, Room, SharedCreepProperties, Structure, StructureController, StructureObject, Transferable, TransferableObject
+    game, Creep, HasPosition, Resource, ResourceType, Room, SharedCreepProperties, Source,
+    Structure, StructureController, StructureObject, Transferable, TransferableObject,
 };
 
-use crate::job::{
-    job::{Job, JobType},
-    job_api::{get_energy_job, get_fill_structures_job, get_upgrade_controller_job},
-    job_utils::creep_set_job,
+use crate::{
+    creep::roles::roles_api::Roles,
+    job::{
+        job::{Job, JobType},
+        job_api::{
+            get_energy_job, get_fill_structures_job, get_mining_job, get_upgrade_controller_job,
+        },
+        job_utils::creep_set_job,
+    },
+    spawn::spawn_utils::get_living_creep_counts,
 };
 
 use super::creep_behavior::CreepBehavior;
@@ -35,7 +42,16 @@ impl CreepBehavior for CarrierBehavior {
                 return Some(energy_job);
             }
 
-            // TODO: Add a fallback job to mine for energy
+            // Fallback to mining your own energy if there are no miners
+            let creep_counts = get_living_creep_counts(room);
+            let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
+            if *miner_count == 0 {
+                if let Some(mining_job) = get_mining_job(room, &self.creep) {
+                    creep_set_job(&self.creep, mining_job);
+                    return Some(mining_job);
+                }
+            }
+
             return None;
         }
 
@@ -66,9 +82,15 @@ impl CreepBehavior for CarrierBehavior {
                 do_fill_structure_job(&self.creep, &transferable_structure.unwrap());
             }
             JobType::UpgradeController(controller_id) => {
-                let controller = game::get_object_by_id_typed::<StructureController>(&controller_id).unwrap();
+                let controller =
+                    game::get_object_by_id_typed::<StructureController>(&controller_id).unwrap();
                 do_upgrade_controller_job(&self.creep, &controller);
             }
+            JobType::SelfMining(source_id) => {
+                let source = game::get_object_by_id_typed(&source_id).unwrap();
+                do_self_mining_job(&self.creep, &source);
+            }
+
             _ => warn!(
                 "{} obtained unhandled job type: {:?}",
                 self.creep.name(),
@@ -101,3 +123,12 @@ fn do_upgrade_controller_job(creep: &Creep, controller: &StructureController) {
         let _ = creep.move_to(controller);
     }
 }
+
+fn do_self_mining_job(creep: &Creep, source: &Source) {
+    if creep.pos().is_near_to(source.pos()) {
+        let _ = creep.harvest(source);
+    } else {
+        let _ = creep.move_to(source);
+    }
+}
+

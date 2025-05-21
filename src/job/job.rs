@@ -5,7 +5,8 @@ pub enum JobType {
     StaticMine(ObjectId<Source>),
     GetDroppedEnergy(ObjectId<Resource>),
     FillStructure(ObjectId<Structure>),
-    UpgradeController(ObjectId<StructureController>)
+    UpgradeController(ObjectId<StructureController>),
+    SelfMining(ObjectId<Source>),
 }
 
 #[derive(Clone, Copy, Debug)]
