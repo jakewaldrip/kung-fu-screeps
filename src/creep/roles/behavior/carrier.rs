@@ -34,12 +34,14 @@ impl CreepBehavior for CarrierBehavior {
                 creep_set_job(&self.creep, energy_job);
                 return Some(energy_job);
             }
+
+            // TODO: Add a fallback job to mine for energy
             return None;
         }
 
-        if let Some(fill_extensions_job) = get_fill_structures_job(room, &self.creep) {
-            creep_set_job(&self.creep, fill_extensions_job);
-            return Some(fill_extensions_job);
+        if let Some(fill_structures_job) = get_fill_structures_job(room, &self.creep) {
+            creep_set_job(&self.creep, fill_structures_job);
+            return Some(fill_structures_job);
         }
 
         if let Some(upgrade_controller_job) = get_upgrade_controller_job(room) {
@@ -50,6 +52,7 @@ impl CreepBehavior for CarrierBehavior {
         None
     }
 
+    // TODO: Need a way to remove a finished job
     fn do_job(&self, _room: &Room, job: &Job) -> () {
         match job.job_type {
             JobType::GetDroppedEnergy(resource_id) => {

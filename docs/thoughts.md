@@ -7,3 +7,5 @@ we could simply flip on the "harvestSource" option on the carriers that are spaw
 Might want to consider a system to get objects of varying types from the room api, like sources, containers, mining containers, storage, etc. Having a consistent interface here would clean up the code of a lot of searches. We might also want to consider caching these values in the heap
 
 At some point when the code base has somewhat stablized in it's patterns, need to go through and give some attention to all the unwraps and unhandled results
+
+Want to consider pre-loading jobs instead of creating them on demand. The reasoning here is so we can not double up on jobs such as filling structures
