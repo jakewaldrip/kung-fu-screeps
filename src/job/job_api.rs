@@ -1,10 +1,33 @@
-use screeps::{
-    find, Creep, HasId, HasPosition, ResourceType, Room, StructureObject,
-};
+use screeps::{find, game, Creep, HasId, HasPosition, ResourceType, Room, StructureObject};
 
 use crate::job::job_utils::filter_has_store_space;
 
-use super::{job::{Job, JobType}, job_utils::filter_is_fill_structure};
+use super::{
+    job::{Job, JobType},
+    job_utils::filter_is_fill_structure,
+};
+
+pub fn is_job_done(creep: &Creep, job: &Job) -> bool {
+    match job.job_type {
+        JobType::StaticMine(_) => false,
+        JobType::GetDroppedEnergy(resource_id) => {
+            let dropped_energy = game::get_object_by_id_typed(&resource_id).unwrap();
+            dropped_energy.amount() == 0 || creep.store().get_used_capacity(None) == 0
+        }
+        JobType::FillStructure(structure_id) => {
+            let structure = game::get_object_by_id_typed(&structure_id).unwrap();
+            let store = StructureObject::from(structure)
+                .as_has_store()
+                .unwrap()
+                .store();
+
+            store.get_free_capacity(None) == 0 || creep.store().get_used_capacity(None) == 0
+        }
+        JobType::UpgradeController(_) => {
+            creep.store().get_used_capacity(Some(ResourceType::Energy)) == 0
+        }
+    }
+}
 
 pub fn get_static_mining_job(room: &Room) -> Option<Job> {
     let static_mining_job = match room.find(find::SOURCES_ACTIVE, None).first() {
@@ -41,15 +64,14 @@ pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
         .pos()
         .find_closest_by_path(find::MY_STRUCTURES, None)
         .filter(|structure| {
-            filter_is_fill_structure(structure)
-                && filter_has_store_space(structure)
+            filter_is_fill_structure(structure) && filter_has_store_space(structure)
         });
 
     if let Some(fill_structure) = fill_structure {
         return Some(Job {
             job_type: JobType::FillStructure(fill_structure.as_structure().id()),
         });
-    } 
+    }
 
     let my_spawn = creep
         .pos()
@@ -66,16 +88,19 @@ pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
         return Some(Job {
             job_type: JobType::FillStructure(spawn_structure.as_structure().id()),
         });
-    } 
+    }
 
     None
 }
 
 pub fn get_upgrade_controller_job(room: &Room) -> Option<Job> {
     let upgrade_controller_job = match room.controller() {
-        Some(controller) => Some(Job { job_type: JobType::UpgradeController(controller.id()) }),
+        Some(controller) => Some(Job {
+            job_type: JobType::UpgradeController(controller.id()),
+        }),
         None => None,
     };
 
     upgrade_controller_job
 }
+
