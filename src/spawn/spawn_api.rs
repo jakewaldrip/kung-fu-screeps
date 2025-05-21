@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use screeps::{game, Room, StructureSpawn};
+use screeps::{find, game, Room, StructureSpawn};
 
 use crate::{
     creep::roles::roles_api::Roles,
@@ -9,15 +9,17 @@ use crate::{
 
 use super::spawn_utils::get_living_creep_counts;
 
-fn get_spawn_limits(_room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
+fn get_spawn_limits(room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
     let mut spawn_limits: HashMap<Roles, u8> = HashMap::new();
+    let source_count = room.find(find::SOURCES, None).len();
+
     match room_state {
         RoomState::BOOTSTRAP => {
-            spawn_limits.insert(Roles::Miner, 2);
+            spawn_limits.insert(Roles::Miner, source_count as u8);
             spawn_limits.insert(Roles::Carrier, 1);
         }
         RoomState::BASIC => {
-            spawn_limits.insert(Roles::Miner, 2);
+            spawn_limits.insert(Roles::Miner, source_count as u8);
             spawn_limits.insert(Roles::Carrier, 4);
         }
     };
