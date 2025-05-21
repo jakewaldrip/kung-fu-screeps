@@ -1,5 +1,5 @@
 use log::warn;
-use screeps::{game, Creep, HasPosition, Room, Source};
+use screeps::{game, Creep, HasPosition, Room, SharedCreepProperties, Source};
 
 use crate::job::{
     job::{Job, JobType},
@@ -34,15 +34,20 @@ impl CreepBehavior for MinerBehavior {
         match job.job_type {
             JobType::StaticMine(source_id) => {
                 let source = game::get_object_by_id_typed::<Source>(&source_id).unwrap();
-                do_static_mine_job(&self.creep, source);
+                do_static_mine_job(&self.creep, &source);
             }
+            _ => warn!(
+                "{} obtained unhandled job type: {}",
+                self.creep.name(),
+                job.job_type
+            ),
         }
     }
 }
 
-fn do_static_mine_job(creep: &Creep, source: Source) {
+fn do_static_mine_job(creep: &Creep, source: &Source) {
     if creep.pos().is_near_to(source.pos()) {
-        let _ = creep.harvest(&source);
+        let _ = creep.harvest(source);
     } else {
         let _ = creep.move_to(source);
     }

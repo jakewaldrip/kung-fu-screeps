@@ -9,7 +9,7 @@ pub struct RoomMemory {
     pub room_state: RoomState,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum RoomState {
     BOOTSTRAP,
     BASIC,

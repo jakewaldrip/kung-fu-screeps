@@ -6,7 +6,7 @@ use crate::memory::{
 };
 
 pub fn run_memory_manager() {
-    if game::time() % 1000 == 0 {
+    if game::time() % 100 == 0 {
         clean_memory();
     }
 

@@ -12,8 +12,14 @@ use super::spawn_utils::get_living_creep_counts;
 fn get_spawn_limits(_room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
     let mut spawn_limits: HashMap<Roles, u8> = HashMap::new();
     match room_state {
-        RoomState::BOOTSTRAP => spawn_limits.insert(Roles::Miner, 2),
-        RoomState::BASIC => spawn_limits.insert(Roles::Miner, 2),
+        RoomState::BOOTSTRAP => {
+            spawn_limits.insert(Roles::Miner, 2);
+            spawn_limits.insert(Roles::Carrier, 1);
+        }
+        RoomState::BASIC => {
+            spawn_limits.insert(Roles::Miner, 2);
+            spawn_limits.insert(Roles::Carrier, 4);
+        }
     };
 
     spawn_limits
@@ -26,15 +32,26 @@ pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
     // Get spawn limits
     let spawn_limits = get_spawn_limits(&room, &room_state);
     let miner_limit = spawn_limits.get(&Roles::Miner).unwrap();
+    let carrier_limit = spawn_limits.get(&Roles::Carrier).unwrap();
 
     // Get creep counts
     let creep_counts = get_living_creep_counts(&room);
     let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
+    let carrier_count = creep_counts.get(&Roles::Carrier).unwrap_or(&0);
 
     // Spawn Creeps
-    // TODO Handle bootstrap case, if no harvesters and boostrap spawn harvester
+    if room_state == RoomState::BOOTSTRAP && carrier_count < carrier_limit {
+        return Some(Roles::Carrier);
+    }
+
+    // TODO can probably get a priority list of creeps for room state
+    // and iterate through it to do this part, worth looking into
     if *miner_count < *miner_limit {
         return Some(Roles::Miner);
+    }
+
+    if *carrier_count < *carrier_limit {
+        return Some(Roles::Carrier);
     }
 
     None
