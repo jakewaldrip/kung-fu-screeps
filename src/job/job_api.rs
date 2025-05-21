@@ -1,4 +1,8 @@
-use screeps::{find, Creep, HasId, HasPosition, ResourceType, Room};
+use screeps::{
+    find, Creep, HasId, HasPosition, ResourceType, Room, StructureProperties, StructureType,
+};
+
+use crate::job::job_utils::filter_has_store_space;
 
 use super::job::{Job, JobType};
 
@@ -30,4 +34,45 @@ pub fn get_energy_job(_room: &Room, creep: &Creep) -> Option<Job> {
     };
 
     dropped_energy_job
+}
+
+// This structure could probably use some cleaning up/functionizing
+pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
+    let my_extension = creep
+        .pos()
+        .find_closest_by_path(find::MY_STRUCTURES, None)
+        .filter(|structure| {
+            structure.structure_type() == StructureType::Extension
+                && filter_has_store_space(structure)
+        });
+
+    let fill_extension_job = match my_extension {
+        Some(extension) => Some(Job {
+            job_type: JobType::FillStructure(extension.as_structure().id()),
+        }),
+        None => None,
+    };
+
+    fill_extension_job
+}
+
+pub fn get_fill_spawns_job(_room: &Room, creep: &Creep) -> Option<Job> {
+    let my_spawn = creep
+        .pos()
+        .find_closest_by_path(find::MY_SPAWNS, None)
+        .filter(|structure| {
+            structure
+                .store()
+                .get_free_capacity(Some(ResourceType::Energy))
+                > 0
+        });
+
+    let fill_spawn_job = match my_spawn {
+        Some(spawn) => Some(Job {
+            job_type: JobType::FillSpawn(spawn.id()),
+        }),
+        None => None,
+    };
+
+    fill_spawn_job
 }

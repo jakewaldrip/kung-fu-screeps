@@ -37,7 +37,7 @@ impl CreepBehavior for MinerBehavior {
                 do_static_mine_job(&self.creep, &source);
             }
             _ => warn!(
-                "{} obtained unhandled job type: {}",
+                "{} obtained unhandled job type: {:?}",
                 self.creep.name(),
                 job.job_type
             ),

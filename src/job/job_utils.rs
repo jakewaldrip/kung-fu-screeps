@@ -1,4 +1,4 @@
-use screeps::{Creep, SharedCreepProperties};
+use screeps::{Creep, ResourceType, SharedCreepProperties, StructureObject};
 
 use crate::creep::roles::behavior::creep_behavior::CREEP_JOB;
 
@@ -24,4 +24,9 @@ pub fn creep_set_job(creep: &Creep, job: Job) {
         let mut creep_jobs = creep_job_refcell.borrow_mut();
         creep_jobs.insert(creep.name(), job)
     });
+}
+
+pub fn filter_has_store_space(structure: &StructureObject) -> bool {
+    let store = structure.as_has_store().unwrap().store();
+    store.get_free_capacity(Some(ResourceType::Energy)) > 0
 }
