@@ -25,39 +25,39 @@ impl CreepData for CarrierData {
 
         match Tier::get_for_room(room) {
             Tier::One => {
-                parts.extend_from_slice(&vec![Part::Work; 1]);
-                parts.extend_from_slice(&vec![Part::Move; 2]);
-                parts.extend_from_slice(&vec![Part::Carry; 2]);
+                parts.extend_from_slice(&[Part::Work; 1]);
+                parts.extend_from_slice(&[Part::Move; 2]);
+                parts.extend_from_slice(&[Part::Carry; 2]);
             }
             Tier::Two => {
-                parts.extend_from_slice(&vec![Part::Work; 2]);
-                parts.extend_from_slice(&vec![Part::Move; 4]);
-                parts.extend_from_slice(&vec![Part::Carry; 3]);
+                parts.extend_from_slice(&[Part::Work; 2]);
+                parts.extend_from_slice(&[Part::Move; 4]);
+                parts.extend_from_slice(&[Part::Carry; 3]);
             }
             Tier::Three => {
-                parts.extend_from_slice(&vec![Part::Work; 2]);
-                parts.extend_from_slice(&vec![Part::Move; 7]);
-                parts.extend_from_slice(&vec![Part::Carry; 5]);
+                parts.extend_from_slice(&[Part::Work; 2]);
+                parts.extend_from_slice(&[Part::Move; 7]);
+                parts.extend_from_slice(&[Part::Carry; 5]);
             }
             Tier::Four => {
-                parts.extend_from_slice(&vec![Part::Move; 10]);
-                parts.extend_from_slice(&vec![Part::Carry; 10]);
+                parts.extend_from_slice(&[Part::Move; 10]);
+                parts.extend_from_slice(&[Part::Carry; 10]);
             }
             Tier::Five => {
-                parts.extend_from_slice(&vec![Part::Move; 10]);
-                parts.extend_from_slice(&vec![Part::Carry; 10]);
+                parts.extend_from_slice(&[Part::Move; 10]);
+                parts.extend_from_slice(&[Part::Carry; 10]);
             }
             Tier::Six => {
-                parts.extend_from_slice(&vec![Part::Move; 10]);
-                parts.extend_from_slice(&vec![Part::Carry; 10]);
+                parts.extend_from_slice(&[Part::Move; 10]);
+                parts.extend_from_slice(&[Part::Carry; 10]);
             }
             Tier::Seven => {
-                parts.extend_from_slice(&vec![Part::Move; 12]);
-                parts.extend_from_slice(&vec![Part::Carry; 12]);
+                parts.extend_from_slice(&[Part::Move; 12]);
+                parts.extend_from_slice(&[Part::Carry; 12]);
             }
             Tier::Eight => {
-                parts.extend_from_slice(&vec![Part::Move; 12]);
-                parts.extend_from_slice(&vec![Part::Carry; 12]);
+                parts.extend_from_slice(&[Part::Move; 12]);
+                parts.extend_from_slice(&[Part::Carry; 12]);
             }
         };
 

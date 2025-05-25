@@ -25,36 +25,36 @@ impl CreepData for MinerData {
 
         match Tier::get_for_room(room) {
             Tier::One => {
-                parts.extend_from_slice(&vec![Part::Work; 2]);
-                parts.extend_from_slice(&vec![Part::Move; 2]);
+                parts.extend_from_slice(&[Part::Work; 2]);
+                parts.extend_from_slice(&[Part::Move; 2]);
             }
             Tier::Two => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 1]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 1]);
             }
             Tier::Three => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
             Tier::Four => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
             Tier::Five => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
             Tier::Six => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
             Tier::Seven => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
             Tier::Eight => {
-                parts.extend_from_slice(&vec![Part::Work; 5]);
-                parts.extend_from_slice(&vec![Part::Move; 3]);
+                parts.extend_from_slice(&[Part::Work; 5]);
+                parts.extend_from_slice(&[Part::Move; 3]);
             }
         };
 
