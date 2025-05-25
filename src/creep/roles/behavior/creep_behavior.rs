@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::HashMap};
 
 use screeps::Room;
 
-use crate::job::job::Job;
+use crate::job::Job;
 
 thread_local! {
     pub static CREEP_JOB: RefCell<HashMap<String, Job>> = RefCell::new(HashMap::new());

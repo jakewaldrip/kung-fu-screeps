@@ -20,8 +20,8 @@ fn calculate_room_state(room: &Room) -> RoomState {
     let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
 
     if *miner_count < 1 {
-        return RoomState::BOOTSTRAP;
+        return RoomState::Bootstrap;
     }
 
-    RoomState::BASIC
+    RoomState::Basic
 }

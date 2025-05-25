@@ -3,8 +3,8 @@ use screeps::{find, game, Creep, HasId, HasPosition, ResourceType, Room, Structu
 use crate::job::job_utils::filter_has_store_space;
 
 use super::{
-    job::{Job, JobType},
     job_utils::filter_is_fill_structure,
+    {Job, JobType},
 };
 
 pub fn is_job_done(creep: &Creep, job: &Job) -> bool {
@@ -48,21 +48,22 @@ pub fn get_static_mining_job(room: &Room) -> Option<Job> {
 }
 
 pub fn get_mining_job(_room: &Room, creep: &Creep) -> Option<Job> {
-    
-
-    creep.pos().find_closest_by_path(find::SOURCES_ACTIVE, None).map(|source| Job {
+    creep
+        .pos()
+        .find_closest_by_path(find::SOURCES_ACTIVE, None)
+        .map(|source| Job {
             job_type: JobType::SelfMining(source.id()),
         })
 }
 
 pub fn get_energy_job(_room: &Room, creep: &Creep) -> Option<Job> {
     // Look for only dropped energy right now (how miners operate early on)
-    
 
     creep
         .pos()
         .find_closest_by_path(find::DROPPED_RESOURCES, None)
-        .filter(|resource| resource.resource_type() == ResourceType::Energy).map(|energy| Job {
+        .filter(|resource| resource.resource_type() == ResourceType::Energy)
+        .map(|energy| Job {
             job_type: JobType::GetDroppedEnergy(energy.id()),
         })
 }
@@ -102,9 +103,7 @@ pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
 }
 
 pub fn get_upgrade_controller_job(room: &Room) -> Option<Job> {
-    
-
     room.controller().map(|controller| Job {
-            job_type: JobType::UpgradeController(controller.id()),
-        })
+        job_type: JobType::UpgradeController(controller.id()),
+    })
 }

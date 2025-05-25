@@ -4,7 +4,7 @@ use screeps::{Creep, Room, RoomName};
 
 use crate::memory::memory_api::get_creeps_in_room;
 
-use super::job::Job;
+use super::Job;
 
 thread_local! {
     pub static ROOM_JOBS: RefCell<HashMap<RoomName, RoomJobs>> = RefCell::new(HashMap::new());
@@ -36,18 +36,18 @@ impl RoomJobs {
 }
 
 // TODO: Complete these
-fn create_static_mining_jobs(_room: &Room, _creeps: &Vec<Creep>) -> Vec<Job> {
+fn create_static_mining_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
     todo!()
 }
 
-fn create_get_energy_jobs(_room: &Room, _creeps: &Vec<Creep>) -> Vec<Job> {
+fn create_get_energy_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
     todo!()
 }
 
-fn create_fill_structure_jobs(_room: &Room, _creeps: &Vec<Creep>) -> Vec<Job> {
+fn create_fill_structure_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
     todo!()
 }
 
-fn create_upgrade_jobs(_room: &Room, _creeps: &Vec<Creep>) -> Vec<Job> {
+fn create_upgrade_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
     todo!()
 }

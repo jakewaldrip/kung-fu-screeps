@@ -2,9 +2,9 @@ use log::warn;
 use screeps::{game, Creep, HasPosition, Room, SharedCreepProperties, Source};
 
 use crate::job::{
-    job::{Job, JobType},
     job_api::get_static_mining_job,
     job_utils::creep_set_job,
+    {Job, JobType},
 };
 
 use super::creep_behavior::CreepBehavior;

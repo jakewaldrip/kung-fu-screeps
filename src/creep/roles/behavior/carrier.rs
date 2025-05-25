@@ -7,11 +7,11 @@ use screeps::{
 use crate::{
     creep::roles::roles_api::Roles,
     job::{
-        job::{Job, JobType},
         job_api::{
             get_energy_job, get_fill_structures_job, get_mining_job, get_upgrade_controller_job,
         },
         job_utils::creep_set_job,
+        {Job, JobType},
     },
     spawn::spawn_utils::get_living_creep_counts,
 };
@@ -131,4 +131,3 @@ fn do_self_mining_job(creep: &Creep, source: &Source) {
         let _ = creep.move_to(source);
     }
 }
-

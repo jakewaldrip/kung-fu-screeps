@@ -11,15 +11,15 @@ pub struct RoomMemory {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum RoomState {
-    BOOTSTRAP,
-    BASIC,
+    Bootstrap,
+    Basic,
 }
 
 impl RoomMemory {
     pub fn init(room: &Room) {
         let room_memory = Self {
             version: ROOM_MEMORY_VERSION,
-            room_state: RoomState::BOOTSTRAP,
+            room_state: RoomState::Bootstrap,
         };
 
         let current_room_memory_result: Result<RoomMemory, _> =

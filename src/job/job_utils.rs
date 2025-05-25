@@ -1,8 +1,10 @@
-use screeps::{Creep, ResourceType, SharedCreepProperties, StructureObject, StructureProperties, StructureType};
+use screeps::{
+    Creep, ResourceType, SharedCreepProperties, StructureObject, StructureProperties, StructureType,
+};
 
 use crate::creep::roles::behavior::creep_behavior::CREEP_JOB;
 
-use super::job::Job;
+use super::Job;
 
 pub fn get_creeps_current_job(creep_name: &str) -> Option<Job> {
     CREEP_JOB.with(|creep_job_refcell| {
@@ -24,9 +26,8 @@ pub fn filter_has_store_space(structure: &StructureObject) -> bool {
 }
 
 pub fn filter_is_fill_structure(structure: &StructureObject) -> bool {
-    match structure.structure_type() {
-        StructureType::Extension => true,
-        StructureType::Storage => true,
-        _ => false
-    }
+    matches!(
+        structure.structure_type(),
+        StructureType::Extension | StructureType::Storage
+    )
 }

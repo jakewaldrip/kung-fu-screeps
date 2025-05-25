@@ -14,11 +14,11 @@ fn get_spawn_limits(room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
     let source_count = room.find(find::SOURCES, None).len();
 
     match room_state {
-        RoomState::BOOTSTRAP => {
+        RoomState::Bootstrap => {
             spawn_limits.insert(Roles::Miner, source_count as u8);
             spawn_limits.insert(Roles::Carrier, 1);
         }
-        RoomState::BASIC => {
+        RoomState::Basic => {
             spawn_limits.insert(Roles::Miner, source_count as u8);
             spawn_limits.insert(Roles::Carrier, 4);
         }
@@ -42,7 +42,7 @@ pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
     let carrier_count = creep_counts.get(&Roles::Carrier).unwrap_or(&0);
 
     // Spawn Creeps
-    if room_state == RoomState::BOOTSTRAP && carrier_count < carrier_limit {
+    if room_state == RoomState::Bootstrap && carrier_count < carrier_limit {
         return Some(Roles::Carrier);
     }
 
@@ -60,12 +60,9 @@ pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
 }
 
 pub fn get_active_spawn_for_room(room: &Room) -> Option<StructureSpawn> {
-    for spawn in game::spawns().values() {
-        if spawn.room().unwrap().name() == room.name() && spawn.spawning().is_none() {
-            return Some(spawn);
-        }
-    }
-    None
+    game::spawns()
+        .values()
+        .find(|spawn| spawn.room().unwrap().name() == room.name() && spawn.spawning().is_none())
 }
 
 pub fn get_creep_name_to_spawn(room_name: &str, role: &Roles) -> String {
