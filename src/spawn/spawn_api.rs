@@ -28,16 +28,16 @@ fn get_spawn_limits(room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
 }
 
 pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
-    let room_memory = RoomMemory::get(&room);
+    let room_memory = RoomMemory::get(room);
     let room_state = room_memory.room_state;
 
     // Get spawn limits
-    let spawn_limits = get_spawn_limits(&room, &room_state);
+    let spawn_limits = get_spawn_limits(room, &room_state);
     let miner_limit = spawn_limits.get(&Roles::Miner).unwrap();
     let carrier_limit = spawn_limits.get(&Roles::Carrier).unwrap();
 
     // Get creep counts
-    let creep_counts = get_living_creep_counts(&room);
+    let creep_counts = get_living_creep_counts(room);
     let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
     let carrier_count = creep_counts.get(&Roles::Carrier).unwrap_or(&0);
 

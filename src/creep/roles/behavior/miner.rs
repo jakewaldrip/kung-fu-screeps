@@ -30,7 +30,7 @@ impl CreepBehavior for MinerBehavior {
         None
     }
 
-    fn do_job(&self, _room: &Room, job: &Job) -> () {
+    fn do_job(&self, _room: &Room, job: &Job) {
         match job.job_type {
             JobType::StaticMine(source_id) => {
                 let source = game::get_object_by_id_typed::<Source>(&source_id).unwrap();

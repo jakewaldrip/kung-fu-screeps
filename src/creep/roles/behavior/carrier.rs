@@ -69,7 +69,7 @@ impl CreepBehavior for CarrierBehavior {
     }
 
     // TODO: Need a way to remove a finished job
-    fn do_job(&self, _room: &Room, job: &Job) -> () {
+    fn do_job(&self, _room: &Room, job: &Job) {
         match job.job_type {
             JobType::GetDroppedEnergy(resource_id) => {
                 let resource = game::get_object_by_id_typed::<Resource>(&resource_id).unwrap();

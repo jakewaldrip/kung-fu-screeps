@@ -48,30 +48,23 @@ pub fn get_static_mining_job(room: &Room) -> Option<Job> {
 }
 
 pub fn get_mining_job(_room: &Room, creep: &Creep) -> Option<Job> {
-    let mining_job = match creep.pos().find_closest_by_path(find::SOURCES_ACTIVE, None) {
-        Some(source) => Some(Job {
-            job_type: JobType::SelfMining(source.id()),
-        }),
-        None => None,
-    };
+    
 
-    mining_job
+    creep.pos().find_closest_by_path(find::SOURCES_ACTIVE, None).map(|source| Job {
+            job_type: JobType::SelfMining(source.id()),
+        })
 }
 
 pub fn get_energy_job(_room: &Room, creep: &Creep) -> Option<Job> {
     // Look for only dropped energy right now (how miners operate early on)
-    let dropped_energy_job = match creep
+    
+
+    creep
         .pos()
         .find_closest_by_path(find::DROPPED_RESOURCES, None)
-        .filter(|resource| resource.resource_type() == ResourceType::Energy)
-    {
-        Some(energy) => Some(Job {
+        .filter(|resource| resource.resource_type() == ResourceType::Energy).map(|energy| Job {
             job_type: JobType::GetDroppedEnergy(energy.id()),
-        }),
-        None => None,
-    };
-
-    dropped_energy_job
+        })
 }
 
 pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
@@ -109,12 +102,9 @@ pub fn get_fill_structures_job(_room: &Room, creep: &Creep) -> Option<Job> {
 }
 
 pub fn get_upgrade_controller_job(room: &Room) -> Option<Job> {
-    let upgrade_controller_job = match room.controller() {
-        Some(controller) => Some(Job {
-            job_type: JobType::UpgradeController(controller.id()),
-        }),
-        None => None,
-    };
+    
 
-    upgrade_controller_job
+    room.controller().map(|controller| Job {
+            job_type: JobType::UpgradeController(controller.id()),
+        })
 }

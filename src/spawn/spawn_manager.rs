@@ -32,7 +32,7 @@ pub fn run_spawns_for_room(room: Room) {
     let creep_data_impl = match get_creep_data_impl(&next_role_to_spawn) {
         Some(creep_data_impl) => creep_data_impl,
         None => {
-            warn!("No implementation found for {}", next_role_to_spawn);
+            warn!("No implementation found for {next_role_to_spawn}");
             return;
         }
     };
@@ -52,8 +52,8 @@ pub fn run_spawns_for_room(room: Room) {
             &spawn_options,
         );
         match spawn_result {
-            Ok(_) => info!("Spawned new creep: {}", creep_name),
-            Err(err) => warn!("Failed to spawn {}: {}", next_role_to_spawn, err),
+            Ok(_) => info!("Spawned new creep: {creep_name}"),
+            Err(err) => warn!("Failed to spawn {next_role_to_spawn}: {err}"),
         }
     }
 }

@@ -11,7 +11,7 @@ use crate::{
 pub fn run_creep_manager() {
     for creep in game::creeps().values() {
         if creep.spawning() {
-            return ();
+            return ;
         }
 
         let creep_memory = CreepMemory::get(&creep);
