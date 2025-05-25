@@ -28,5 +28,5 @@ pub fn game_loop() {
     run_spawn_manager();
     run_creep_manager();
 
-    info!("Tick: {} | CPU: {}", game::time(), game::cpu::get_used())
+    info!("Tick: {} | CPU: {}", game::time(), game::cpu::get_used());
 }

@@ -37,6 +37,19 @@ impl RoomJobs {
 
 // TODO: Complete these
 fn create_static_mining_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+    // Get sources for room
+    // Introduce room level memory cache here as well
+    // Basic concept: room_memory_api::get_sources(room) -> Vec<Source>
+    // It will store IDs, but it will return objects, different bucket for different objects
+    // sources: RefCell<Vec<ObjectId<Source>>>
+    // structures: RefCel<HashMap<StructureType, ObjectId<Structure>>>
+    //
+    // Create a job for each
+    // Introduce concept of job level memory here, in this case work_parts_remaining: 5 
+    //
+    // For each source, before creating the job get the number of creeps that currently have it and adjust accordingly
+    // We can find that by looking for static mining jobs that target the same source
+    // Subtract their work parts from work_parts_remaining, and if > 0 create the job with that number
     todo!()
 }
 
