@@ -118,4 +118,3 @@ pub fn get_upgrade_controller_job(room: &Room) -> Option<Job> {
 
     upgrade_controller_job
 }
-
