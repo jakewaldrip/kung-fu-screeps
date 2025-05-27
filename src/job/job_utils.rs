@@ -50,5 +50,6 @@ pub fn get_work_parts_assigned_to_source(creeps: &[Creep], source_id: &ObjectId<
         }
     }
 
+    // TODO: Use constant here to return max or value
     work_parts_assigned
 }
