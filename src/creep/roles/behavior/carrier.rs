@@ -71,12 +71,14 @@ impl CreepBehavior for CarrierBehavior {
     // TODO: Need a way to remove a finished job
     fn do_job(&self, _room: &Room, job: &Job) {
         match job.job_type {
-            JobType::GetDroppedEnergy(resource_id) => {
-                let resource = game::get_object_by_id_typed::<Resource>(&resource_id).unwrap();
+            JobType::GetDroppedEnergy(job_data) => {
+                let resource =
+                    game::get_object_by_id_typed::<Resource>(&job_data.resource_id).unwrap();
                 do_pickup_dropped_energy_job(&self.creep, &resource);
             }
-            JobType::FillStructure(structure_id) => {
-                let structure = game::get_object_by_id_typed::<Structure>(&structure_id).unwrap();
+            JobType::FillStructure(job_data) => {
+                let structure =
+                    game::get_object_by_id_typed::<Structure>(&job_data.structure_id).unwrap();
                 let transferable_structure =
                     TransferableObject::try_from(StructureObject::from(structure));
                 do_fill_structure_job(&self.creep, &transferable_structure.unwrap());

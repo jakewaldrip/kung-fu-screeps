@@ -2,6 +2,7 @@ use screeps::{game, Creep, OwnedStructureProperties, Room};
 
 use super::creep_memory::CreepMemory;
 
+// TODO: Only gets visible rooms, need a way to store owned rooms (edge case)
 pub fn get_owned_rooms() -> Vec<Room> {
     game::rooms()
         .values()

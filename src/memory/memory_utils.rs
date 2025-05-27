@@ -8,6 +8,9 @@ use screeps::{
 };
 use wasm_bindgen::prelude::*;
 
+// TODO: This doesn't work, seems to be tied to the client and that client is overrwriting the
+// values of memory somehow. Reflect::get will receive those values, and seem to respect the
+// Reflect::set call, but the client will not reflect it as such
 pub fn clean_memory() {
     info!("Running memory cleanup");
 
