@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use screeps::{game, Room};
+use screeps::{game, Creep, Part, Room};
 
 use crate::{creep::roles::roles_api::Roles, memory::creep_memory::CreepMemory};
 
@@ -18,4 +18,18 @@ pub fn get_living_creep_counts(room: &Room) -> HashMap<Roles, u8> {
     }
 
     creep_count
+}
+
+pub fn get_part_count_by_type(creep: &Creep, body_part: &Part) -> u32 {
+    let creep_body = creep.body();
+    creep_body
+        .iter()
+        .filter_map(|p| {
+            if &p.part() == body_part {
+                Some(p.part().cost())
+            } else {
+                None
+            }
+        })
+        .sum()
 }

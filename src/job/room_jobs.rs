@@ -1,11 +1,11 @@
 use std::{cell::RefCell, collections::HashMap};
 
 use log::warn;
-use screeps::{Creep, Room, RoomName};
+use screeps::{Creep, HasId, Room, RoomName};
 
-use crate::memory::memory_api::get_creeps_in_room;
+use crate::{memory::memory_api::get_creeps_in_room, room::room_cache::ROOM_CACHE};
 
-use super::Job;
+use super::{job_utils::get_work_parts_assigned_to_source, Job, JobType, StaticMineData};
 
 thread_local! {
     pub static ROOM_JOBS: RefCell<HashMap<RoomName, RoomJobs>> = RefCell::new(HashMap::new());
@@ -59,8 +59,7 @@ impl RoomJobs {
         F: Fn(&mut Job) -> bool,
         U: FnOnce(&mut Job),
     {
-        ROOM_JOBS.with(|room_jobs_ref| {
-            let mut room_jobs_memory = room_jobs_ref.borrow_mut();
+        ROOM_JOBS.with_borrow_mut(|room_jobs_memory| {
             let room_jobs = match room_jobs_memory.get_mut(&room.name()) {
                 Some(room_jobs) => room_jobs,
                 None => {
@@ -97,32 +96,81 @@ impl RoomJobs {
 
             // returns copy of the job, ownership cannot leave scope
             Some(*creep_job)
-        });
-
-        None
+        })
     }
 }
 
-// TODO: Complete these
-fn create_static_mining_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
-    // Get sources for room
-    // Create a job for each
-    // Introduce concept of job level memory here, in this case work_parts_remaining: 5
-    //
-    // For each source, before creating the job get the number of creeps that currently have it and adjust accordingly
-    // We can find that by looking for static mining jobs that target the same source
-    // Subtract their work parts from work_parts_remaining, and if > 0 create the job with that number
-    todo!()
+fn create_static_mining_jobs(room: &Room, creeps: &[Creep]) -> Vec<Job> {
+    ROOM_CACHE.with_borrow(|room_cache_map| {
+        let room_cache = match room_cache_map.get(&room.name()) {
+            Some(room_cache) => room_cache,
+            None => {
+                warn!("Cache not found for room: {}", room.name());
+                return Vec::new();
+            }
+        };
+
+        let mut source_jobs: Vec<Job> = Vec::new();
+
+        for source_id in &room_cache.sources {
+            let work_parts_currently_assigned =
+                get_work_parts_assigned_to_source(creeps, source_id);
+            // TODO: move this into a constant
+            let work_parts_remaining = 5 - work_parts_currently_assigned as i32;
+            let job_type = JobType::StaticMine(StaticMineData::new_from_data(
+                source_id,
+                work_parts_remaining,
+            ));
+
+            let job = Job { job_type };
+            source_jobs.push(job);
+        }
+
+        source_jobs
+    })
 }
 
-fn create_get_energy_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
-    todo!()
+// TODO: complete
+fn create_get_energy_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+    ROOM_CACHE.with_borrow(|room_cache_map| {
+        let room_cache = match room_cache_map.get(&room.name()) {
+            Some(room_cache) => room_cache,
+            None => {
+                warn!("Cache not found for room: {}", room.name());
+                return Vec::new();
+            }
+        };
+
+        let mut get_energy_jobs: Vec<Job> = Vec::new();
+        get_energy_jobs
+    })
 }
 
-fn create_fill_structure_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
-    todo!()
+// TODO: complete
+fn create_fill_structure_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+    ROOM_CACHE.with_borrow(|room_cache_map| {
+        let room_cache = match room_cache_map.get(&room.name()) {
+            Some(room_cache) => room_cache,
+            None => {
+                warn!("Cache not found for room: {}", room.name());
+                return Vec::new();
+            }
+        };
+
+        let mut fill_structure_jobs: Vec<Job> = Vec::new();
+        fill_structure_jobs
+    })
 }
 
-fn create_upgrade_jobs(_room: &Room, _creeps: &[Creep]) -> Vec<Job> {
-    todo!()
+fn create_upgrade_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+    let controller = match room.controller() {
+        Some(controller) => controller,
+        None => {
+            warn!("Controller not found in room: {}", room.name());
+            return Vec::new();
+        }
+    };
+
+    let job_type = JobType::UpgradeController(controller.id());
+    vec![Job { job_type }]
 }

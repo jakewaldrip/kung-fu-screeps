@@ -29,7 +29,16 @@ pub struct Job {
 #[derive(Clone, Copy, Debug)]
 pub struct StaticMineData {
     pub source_id: ObjectId<Source>,
-    pub _work_parts_remaining: i32,
+    pub work_parts_remaining: i32,
+}
+
+impl StaticMineData {
+    pub fn new_from_data(source_id: &ObjectId<Source>, work_parts_remaining: i32) -> Self {
+        StaticMineData {
+            source_id: *source_id,
+            work_parts_remaining,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
