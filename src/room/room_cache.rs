@@ -1,9 +1,6 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use log::warn;
 use screeps::{find, game, HasId, ObjectId, Room, RoomName, Source, StructureSpawn};
-
-use crate::memory::memory_api::get_owned_rooms;
 
 thread_local! {
     pub static ROOM_CACHE: RefCell<HashMap<RoomName, RoomCache>> = RefCell::new(HashMap::new());
@@ -27,13 +24,13 @@ impl RoomCache {
             // TODO: Change update_cache to accept config for individual object update times
             if let Some(room_cache) = room_cache_map.get_mut(&room_name) {
                 if game::time() % 10 == 0 {
-                    room_cache.update_cache();
+                    room_cache.update_cache(room);
                 } else {
                     room_cache.validate_cache();
                 }
             } else {
                 let mut room_cache = RoomCache::new(room);
-                room_cache.update_cache();
+                room_cache.update_cache(room);
                 room_cache_map.insert(room_name, room_cache);
             }
         });
@@ -60,20 +57,7 @@ impl RoomCache {
 
     /// Populate the cache with updated values from the room
     /// Uses room.find to locate structures
-    pub fn update_cache(&mut self) {
-        let owned_rooms = get_owned_rooms();
-        let found_room = owned_rooms
-            .iter()
-            .find(|room| room.name() == self.room_name);
-
-        let room = match found_room {
-            Some(room) => room,
-            None => {
-                warn!("Room not found {}", self.room_name);
-                return;
-            }
-        };
-
+    pub fn update_cache(&mut self, room: &Room) {
         self.sources = room
             .find(find::SOURCES, None)
             .iter()

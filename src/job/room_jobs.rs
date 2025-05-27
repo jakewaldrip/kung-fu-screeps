@@ -1,5 +1,6 @@
 use std::{cell::RefCell, collections::HashMap};
 
+use log::warn;
 use screeps::{Creep, Room, RoomName};
 
 use crate::memory::memory_api::get_creeps_in_room;
@@ -60,36 +61,42 @@ impl RoomJobs {
     {
         ROOM_JOBS.with(|room_jobs_ref| {
             let mut room_jobs_memory = room_jobs_ref.borrow_mut();
-            if let Some(room_jobs) = room_jobs_memory.get_mut(&room.name()) {
-                let jobs_of_type = match job_type {
-                    RoomJobTypes::StaticMining => &mut room_jobs.static_mining_jobs,
-                    RoomJobTypes::GetEnergy => &mut room_jobs.get_energy_jobs,
-                    RoomJobTypes::FillStructure => &mut room_jobs.fill_structure_jobs,
-                    RoomJobTypes::Upgrade => &mut room_jobs.upgrade_jobs,
-                };
-
-                // TODO: Consider .find parameter to select a job more precisely
-                // All filtered jobs are considered valid
-                let mut valid_jobs: Vec<&mut Job> = Vec::new();
-                for job in jobs_of_type.iter_mut() {
-                    if filter_fn(job) {
-                        valid_jobs.push(job);
-                    }
-                }
-
-                // swap_remove will panic if vec is empty
-                if valid_jobs.is_empty() {
+            let room_jobs = match room_jobs_memory.get_mut(&room.name()) {
+                Some(room_jobs) => room_jobs,
+                None => {
+                    warn!("Jobs not found for room: {}", room.name());
                     return None;
                 }
+            };
 
-                let creep_job = valid_jobs.swap_remove(0);
-                if let Some(update_fn) = update_fn_option {
-                    update_fn(creep_job);
+            let jobs_of_type = match job_type {
+                RoomJobTypes::StaticMining => &mut room_jobs.static_mining_jobs,
+                RoomJobTypes::GetEnergy => &mut room_jobs.get_energy_jobs,
+                RoomJobTypes::FillStructure => &mut room_jobs.fill_structure_jobs,
+                RoomJobTypes::Upgrade => &mut room_jobs.upgrade_jobs,
+            };
+
+            // TODO: Consider .find parameter to select a job more precisely
+            // All filtered jobs are considered valid
+            let mut valid_jobs: Vec<&mut Job> = Vec::new();
+            for job in jobs_of_type.iter_mut() {
+                if filter_fn(job) {
+                    valid_jobs.push(job);
                 }
-                return Some(creep_job.clone());
             }
 
-            return None;
+            // swap_remove will panic if vec is empty
+            if valid_jobs.is_empty() {
+                return None;
+            }
+
+            let creep_job = valid_jobs.swap_remove(0);
+            if let Some(update_fn) = update_fn_option {
+                update_fn(creep_job);
+            }
+
+            // returns copy of the job, ownership cannot leave scope
+            Some(*creep_job)
         });
 
         None
