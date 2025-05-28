@@ -1,11 +1,17 @@
 use std::{cell::RefCell, collections::HashMap};
 
 use log::warn;
-use screeps::{Creep, HasId, Room, RoomName};
+use screeps::{game, Creep, HasId, ObjectId, ResourceType, Room, RoomName, Structure};
 
-use crate::{memory::memory_api::get_creeps_in_room, room::room_cache::ROOM_CACHE};
+use crate::{
+    config::constants::WORK_PARTS_PER_SOURCE, memory::memory_api::get_creeps_in_room,
+    room::room_cache::ROOM_CACHE,
+};
 
-use super::{job_utils::get_work_parts_assigned_to_source, Job, JobType, StaticMineData};
+use super::{
+    job_utils::{get_carry_capacity_assigned_to_object, get_work_parts_assigned_to_source},
+    FillStructureData, GetDroppedEnergyData, Job, JobType, StaticMineData,
+};
 
 thread_local! {
     pub static ROOM_JOBS: RefCell<HashMap<RoomName, RoomJobs>> = RefCell::new(HashMap::new());
@@ -115,23 +121,21 @@ fn create_static_mining_jobs(room: &Room, creeps: &[Creep]) -> Vec<Job> {
         for source_id in &room_cache.sources {
             let work_parts_currently_assigned =
                 get_work_parts_assigned_to_source(creeps, source_id);
-            // TODO: move this into a constant
-            let work_parts_remaining = 5 - work_parts_currently_assigned as i32;
+            let work_parts_remaining = WORK_PARTS_PER_SOURCE - work_parts_currently_assigned;
+
             let job_type = JobType::StaticMine(StaticMineData::new_from_data(
                 source_id,
                 work_parts_remaining,
             ));
-
-            let job = Job { job_type };
-            source_jobs.push(job);
+            source_jobs.push(Job { job_type });
         }
 
         source_jobs
     })
 }
 
-// TODO: complete
-fn create_get_energy_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+// TODO: Add more sources of energy
+fn create_get_energy_jobs(room: &Room, creeps: &[Creep]) -> Vec<Job> {
     ROOM_CACHE.with_borrow(|room_cache_map| {
         let room_cache = match room_cache_map.get(&room.name()) {
             Some(room_cache) => room_cache,
@@ -142,12 +146,44 @@ fn create_get_energy_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
         };
 
         let mut get_energy_jobs: Vec<Job> = Vec::new();
+
+        // Dropped Energy
+        for resource_id in &room_cache.dropped_resources {
+            let resource = game::get_object_by_id_typed(resource_id).unwrap();
+            if resource.resource_type() != ResourceType::Energy {
+                continue;
+            }
+
+            let carry_capacity_currently_assigned =
+                get_carry_capacity_assigned_to_object(creeps, resource_id);
+
+            let energy_remaining = resource
+                .amount()
+                .saturating_sub(carry_capacity_currently_assigned);
+
+            let job_type = JobType::GetDroppedEnergy(GetDroppedEnergyData::new_from_data(
+                resource_id,
+                energy_remaining,
+            ));
+            get_energy_jobs.push(Job { job_type });
+        }
+
+        // Self mining
+        for source_id in &room_cache.sources {
+            let source = game::get_object_by_id_typed(source_id).unwrap();
+            // TODO: Smarter targeting for sources about to expire and currently being worked
+            if source.energy() > 0 {
+                let job_type = JobType::SelfMining(*source_id);
+                get_energy_jobs.push(Job { job_type });
+            }
+        }
+
         get_energy_jobs
     })
 }
 
-// TODO: complete
-fn create_fill_structure_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
+// TODO: Add more structures that can be filled
+fn create_fill_structure_jobs(room: &Room, creeps: &[Creep]) -> Vec<Job> {
     ROOM_CACHE.with_borrow(|room_cache_map| {
         let room_cache = match room_cache_map.get(&room.name()) {
             Some(room_cache) => room_cache,
@@ -158,6 +194,28 @@ fn create_fill_structure_jobs(room: &Room, _creeps: &[Creep]) -> Vec<Job> {
         };
 
         let mut fill_structure_jobs: Vec<Job> = Vec::new();
+
+        // TODO: Zip extensions into a slice to loop over here, mapping the objectId objects into
+        // structure ID objects in that
+        for spawn_id in &room_cache.spawns {
+            let carry_capacity_currently_assigned =
+                get_carry_capacity_assigned_to_object(creeps, spawn_id);
+            let spawn = game::get_object_by_id_typed(spawn_id).unwrap();
+            let free_capacity = spawn.store().get_free_capacity(Some(ResourceType::Energy));
+            let capacity_remaining =
+                (free_capacity - carry_capacity_currently_assigned as i32).max(0) as u32;
+
+            // Unchecked conversion, safe in this case going from spawn -> structure
+            // Need to error check/log these when used in general
+            let structure_id = ObjectId::into_type::<Structure>(*spawn_id);
+
+            let job_type = JobType::FillStructure(FillStructureData::new_from_data(
+                structure_id,
+                capacity_remaining,
+            ));
+            fill_structure_jobs.push(Job { job_type });
+        }
+
         fill_structure_jobs
     })
 }

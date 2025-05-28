@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use screeps::{find, game, HasId, ObjectId, Room, RoomName, Source, StructureSpawn};
+use screeps::{find, game, HasId, ObjectId, Resource, Room, RoomName, Source, StructureSpawn};
 
 thread_local! {
     pub static ROOM_CACHE: RefCell<HashMap<RoomName, RoomCache>> = RefCell::new(HashMap::new());
@@ -12,6 +12,7 @@ pub struct RoomCache {
 
     pub sources: Vec<ObjectId<Source>>,
     pub spawns: Vec<ObjectId<StructureSpawn>>,
+    pub dropped_resources: Vec<ObjectId<Resource>>,
 }
 
 impl RoomCache {
@@ -43,6 +44,7 @@ impl RoomCache {
             room_name: room.name(),
             sources: Vec::new(),
             spawns: Vec::new(),
+            dropped_resources: Vec::new(),
         }
     }
 
@@ -73,6 +75,12 @@ impl RoomCache {
                     None
                 }
             })
+            .collect();
+
+        self.dropped_resources = room
+            .find(find::DROPPED_RESOURCES, None)
+            .iter()
+            .map(|resource| resource.id())
             .collect();
     }
 }

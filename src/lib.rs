@@ -8,6 +8,7 @@ use screeps::game::{self};
 use spawn::spawn_manager::run_spawn_manager;
 use wasm_bindgen::prelude::*;
 
+mod config;
 mod creep;
 mod job;
 mod logging;

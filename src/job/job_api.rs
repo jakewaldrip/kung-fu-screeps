@@ -28,22 +28,27 @@ pub fn is_job_done(creep: &Creep, job: &Job) -> bool {
     }
 }
 
+// TODO: complete
 pub fn get_static_mining_job(_room: &Room, _creep: &Creep) -> Option<Job> {
     todo!()
 }
 
+// TODO: complete
 pub fn get_mining_job(_room: &Room, _creep: &Creep) -> Option<Job> {
     todo!()
 }
 
+// TODO: complete
 pub fn get_energy_job(_room: &Room, _creep: &Creep) -> Option<Job> {
     todo!()
 }
 
+// TODO: complete
 pub fn get_fill_structures_job(_room: &Room, _creep: &Creep) -> Option<Job> {
     todo!()
 }
 
+// TODO: complete
 pub fn get_upgrade_controller_job(_room: &Room) -> Option<Job> {
     todo!()
 }

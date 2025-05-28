@@ -4,7 +4,8 @@ use screeps::{
 };
 
 use crate::{
-    creep::roles::behavior::creep_behavior::CREEP_JOB, spawn::spawn_utils::get_part_count_by_type,
+    config::constants::WORK_PARTS_PER_SOURCE, creep::roles::behavior::creep_behavior::CREEP_JOB,
+    spawn::spawn_utils::get_part_count_by_type,
 };
 
 use super::{Job, JobType};
@@ -50,6 +51,10 @@ pub fn get_work_parts_assigned_to_source(creeps: &[Creep], source_id: &ObjectId<
         }
     }
 
-    // TODO: Use constant here to return max or value
-    work_parts_assigned
+    work_parts_assigned.max(WORK_PARTS_PER_SOURCE)
+}
+
+// TODO: complete this
+pub fn get_carry_capacity_assigned_to_object<T>(creeps: &[Creep], object_id: &ObjectId<T>) -> u32 {
+    todo!()
 }

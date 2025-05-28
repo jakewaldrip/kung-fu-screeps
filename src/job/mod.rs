@@ -29,11 +29,11 @@ pub struct Job {
 #[derive(Clone, Copy, Debug)]
 pub struct StaticMineData {
     pub source_id: ObjectId<Source>,
-    pub work_parts_remaining: i32,
+    pub work_parts_remaining: u32,
 }
 
 impl StaticMineData {
-    pub fn new_from_data(source_id: &ObjectId<Source>, work_parts_remaining: i32) -> Self {
+    pub fn new_from_data(source_id: &ObjectId<Source>, work_parts_remaining: u32) -> Self {
         StaticMineData {
             source_id: *source_id,
             work_parts_remaining,
@@ -44,11 +44,29 @@ impl StaticMineData {
 #[derive(Clone, Copy, Debug)]
 pub struct GetDroppedEnergyData {
     pub resource_id: ObjectId<Resource>,
-    pub _energy_remaining: i32,
+    pub energy_remaining: u32,
+}
+
+impl GetDroppedEnergyData {
+    pub fn new_from_data(resource_id: &ObjectId<Resource>, energy_remaining: u32) -> Self {
+        GetDroppedEnergyData {
+            resource_id: *resource_id,
+            energy_remaining,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
 pub struct FillStructureData {
     pub structure_id: ObjectId<Structure>,
-    pub _capacity_remaining: i32,
+    pub capacity_remaining: u32,
+}
+
+impl FillStructureData {
+    pub fn new_from_data(structure_id: ObjectId<Structure>, capacity_remaining: u32) -> Self {
+        FillStructureData {
+            structure_id,
+            capacity_remaining,
+        }
+    }
 }
