@@ -1,7 +1,7 @@
 use std::{cell::RefCell, collections::HashMap};
 
 use log::warn;
-use screeps::{game, Creep, HasId, ObjectId, ResourceType, Room, RoomName, Structure};
+use screeps::{game, Creep, HasId, ObjectId, Position, ResourceType, Room, RoomName, Structure};
 
 use crate::{
     config::constants::WORK_PARTS_PER_SOURCE, memory::memory_api::get_creeps_in_room,
@@ -49,13 +49,14 @@ impl RoomJobs {
         });
     }
 
+    // TODO: move these into the get jobs instead, no need for it to be this generic
     /// Gets a job from the room_job cache and updates its memory in the heap
     /// room: The room we are seeking a job in
     /// job_type - the type of job we are looking for. Needed to narrow down to a precise vec of jobs
     /// filter_fn - Filter to apply to the job vec
     /// update_fn_option - Optional update fn to apply to the job data once a creep has grabbed it.
     /// For example, subtracting the creep's carry capacity from a containers remaining energy
-    pub fn _get_job_and_update<F, U>(
+    pub fn get_job_and_update<F, U>(
         room: &Room,
         job_type: RoomJobTypes,
         filter_fn: F,
@@ -81,7 +82,6 @@ impl RoomJobs {
                 RoomJobTypes::Upgrade => &mut room_jobs.upgrade_jobs,
             };
 
-            // TODO: Consider .find parameter to select a job more precisely
             // All filtered jobs are considered valid
             let mut valid_jobs: Vec<&mut Job> = Vec::new();
             for job in jobs_of_type.iter_mut() {
