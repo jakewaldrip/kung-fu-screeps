@@ -1,7 +1,7 @@
 use std::{cell::RefCell, collections::HashMap};
 
 use log::warn;
-use screeps::{game, Creep, HasId, ObjectId, Position, ResourceType, Room, RoomName, Structure};
+use screeps::{game, Creep, HasId, ObjectId, ResourceType, Room, RoomName, Structure};
 
 use crate::{
     config::constants::WORK_PARTS_PER_SOURCE, memory::memory_api::get_creeps_in_room,
@@ -18,17 +18,10 @@ thread_local! {
 }
 
 pub struct RoomJobs {
-    static_mining_jobs: Vec<Job>,
-    get_energy_jobs: Vec<Job>,
-    fill_structure_jobs: Vec<Job>,
-    upgrade_jobs: Vec<Job>,
-}
-
-pub enum RoomJobTypes {
-    StaticMining,
-    GetEnergy,
-    FillStructure,
-    Upgrade,
+    pub static_mining_jobs: Vec<Job>,
+    pub get_energy_jobs: Vec<Job>,
+    pub fill_structure_jobs: Vec<Job>,
+    pub upgrade_jobs: Vec<Job>,
 }
 
 impl RoomJobs {
@@ -47,62 +40,6 @@ impl RoomJobs {
             let mut room_jobs_memory = room_jobs_ref.borrow_mut();
             room_jobs_memory.insert(room_name, room_jobs);
         });
-    }
-
-    // TODO: move these into the get jobs instead, no need for it to be this generic
-    /// Gets a job from the room_job cache and updates its memory in the heap
-    /// room: The room we are seeking a job in
-    /// job_type - the type of job we are looking for. Needed to narrow down to a precise vec of jobs
-    /// filter_fn - Filter to apply to the job vec
-    /// update_fn_option - Optional update fn to apply to the job data once a creep has grabbed it.
-    /// For example, subtracting the creep's carry capacity from a containers remaining energy
-    pub fn get_job_and_update<F, U>(
-        room: &Room,
-        job_type: RoomJobTypes,
-        filter_fn: F,
-        update_fn_option: Option<U>,
-    ) -> Option<Job>
-    where
-        F: Fn(&mut Job) -> bool,
-        U: FnOnce(&mut Job),
-    {
-        ROOM_JOBS.with_borrow_mut(|room_jobs_memory| {
-            let room_jobs = match room_jobs_memory.get_mut(&room.name()) {
-                Some(room_jobs) => room_jobs,
-                None => {
-                    warn!("Jobs not found for room: {}", room.name());
-                    return None;
-                }
-            };
-
-            let jobs_of_type = match job_type {
-                RoomJobTypes::StaticMining => &mut room_jobs.static_mining_jobs,
-                RoomJobTypes::GetEnergy => &mut room_jobs.get_energy_jobs,
-                RoomJobTypes::FillStructure => &mut room_jobs.fill_structure_jobs,
-                RoomJobTypes::Upgrade => &mut room_jobs.upgrade_jobs,
-            };
-
-            // All filtered jobs are considered valid
-            let mut valid_jobs: Vec<&mut Job> = Vec::new();
-            for job in jobs_of_type.iter_mut() {
-                if filter_fn(job) {
-                    valid_jobs.push(job);
-                }
-            }
-
-            // swap_remove will panic if vec is empty
-            if valid_jobs.is_empty() {
-                return None;
-            }
-
-            let creep_job = valid_jobs.swap_remove(0);
-            if let Some(update_fn) = update_fn_option {
-                update_fn(creep_job);
-            }
-
-            // returns copy of the job, ownership cannot leave scope
-            Some(*creep_job)
-        })
     }
 }
 

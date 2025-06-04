@@ -8,7 +8,8 @@ use crate::{
     creep::roles::roles_api::Roles,
     job::{
         job_api::{
-            get_energy_job, get_fill_structures_job, get_mining_job, get_upgrade_controller_job,
+            get_energy_from_structure_job, get_fill_structures_job, get_mining_job,
+            get_upgrade_controller_job,
         },
         job_utils::creep_set_job,
         {Job, JobType},
@@ -37,7 +38,7 @@ impl CreepBehavior for CarrierBehavior {
 
         // Get energy if we're out first, early return if we can't
         if used_capacity == 0 {
-            if let Some(energy_job) = get_energy_job(room, &self.creep) {
+            if let Some(energy_job) = get_energy_from_structure_job(room, &self.creep) {
                 creep_set_job(&self.creep, energy_job);
                 return Some(energy_job);
             }

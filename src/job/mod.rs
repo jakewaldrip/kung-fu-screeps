@@ -21,6 +21,32 @@ pub enum JobType {
     FillStructure(FillStructureData),
 }
 
+impl JobType {
+    pub fn as_static_mine(&self) -> Option<&StaticMineData> {
+        if let JobType::StaticMine(ref data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_mut_static_mine(&mut self) -> Option<&mut StaticMineData> {
+        if let JobType::StaticMine(ref mut data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_self_mining(&self) -> Option<&ObjectId<Source>> {
+        if let JobType::SelfMining(ref data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct Job {
     pub job_type: JobType,
