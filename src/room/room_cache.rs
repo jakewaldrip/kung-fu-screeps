@@ -24,7 +24,7 @@ impl RoomCache {
 
             // TODO: Change update_cache to accept config for individual object update times
             if let Some(room_cache) = room_cache_map.get_mut(&room_name) {
-                if game::time() % 10 == 0 {
+                if game::time().is_multiple_of(10) {
                     room_cache.update_cache(room);
                 } else {
                     room_cache.validate_cache();
