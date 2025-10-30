@@ -130,8 +130,64 @@ pub fn get_mining_job(room: &Room, creep: &Creep) -> Option<Job> {
 }
 
 // TODO: complete
-pub fn get_energy_from_structure_job(_room: &Room, _creep: &Creep) -> Option<Job> {
-    todo!()
+pub fn get_energy_from_structure_job(room: &Room, creep: &Creep) -> Option<Job> {
+    let update_fn = |job: &mut Job| {
+        let creep_free_store = creep.store().get_free_capacity(Some(ResourceType::Energy)) as u32;
+        if let Some(get_dropped_energy_data) = job.job_type.as_mut_get_dropped_energy() {
+            get_dropped_energy_data.energy_remaining = get_dropped_energy_data
+                .energy_remaining
+                .saturating_sub(creep_free_store);
+        }
+    };
+
+    ROOM_JOBS.with_borrow_mut(|room_jobs_memory| {
+        let room_jobs = room_jobs_memory.get_mut(&room.name()).or_else(|| {
+            warn!("Jobs not found for room: {}", room.name());
+            None
+        })?;
+
+        let jobs_of_type = &mut room_jobs.get_energy_jobs;
+
+        let mut valid_jobs: Vec<&mut Job> = jobs_of_type
+            .iter_mut()
+            .filter(|job| {
+                // Enforce 70% of creep store capacity before making the journey
+                if let Some(get_dropped_energy_job) = job.job_type.as_get_dropped_energy() {
+                    (get_dropped_energy_job.energy_remaining as f32)
+                        > (creep.store().get_free_capacity(Some(ResourceType::Energy)) as f32 * 0.7)
+                } else {
+                    false
+                }
+            })
+            .collect();
+
+        // swap_remove will panic if vec is empty
+        if valid_jobs.is_empty() {
+            return None;
+        }
+
+        // find index of closest of the creep jobs to choose
+        let (creep_job_index, _) = valid_jobs
+            .iter()
+            .enumerate()
+            .min_by_key(|(_, job)| {
+                if let Some(get_dropped_energy_job_data) = job.job_type.as_get_dropped_energy() {
+                    let source =
+                        game::get_object_by_id_typed(&get_dropped_energy_job_data.resource_id)
+                            .unwrap();
+                    creep.pos().get_range_to(source.pos())
+                } else {
+                    unreachable!()
+                }
+            })
+            .unwrap();
+
+        let creep_job = valid_jobs.swap_remove(creep_job_index);
+        update_fn(creep_job);
+
+        // returns copy of the job, ownership cannot leave scope
+        Some(*creep_job)
+    })
 }
 
 // TODO: complete

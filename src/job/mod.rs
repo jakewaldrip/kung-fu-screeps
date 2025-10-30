@@ -45,6 +45,22 @@ impl JobType {
             None
         }
     }
+
+    pub fn as_get_dropped_energy(&self) -> Option<&GetDroppedEnergyData> {
+        if let JobType::GetDroppedEnergy(ref data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_mut_get_dropped_energy(&mut self) -> Option<&mut GetDroppedEnergyData> {
+        if let JobType::GetDroppedEnergy(ref mut data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
