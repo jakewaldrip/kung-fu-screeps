@@ -24,6 +24,13 @@ pub fn creep_set_job(creep: &Creep, job: Job) {
     });
 }
 
+pub fn creep_clear_job(creep: &Creep) {
+    CREEP_JOB.with(|creep_job_refcell| {
+        let mut creep_jobs = creep_job_refcell.borrow_mut();
+        creep_jobs.remove(&creep.name())
+    });
+}
+
 pub fn _has_store_space(structure: &StructureObject) -> bool {
     let store = structure.as_has_store().unwrap().store();
     store.get_free_capacity(Some(ResourceType::Energy)) > 0

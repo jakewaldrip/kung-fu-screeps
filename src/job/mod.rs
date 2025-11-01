@@ -61,6 +61,30 @@ impl JobType {
             None
         }
     }
+
+    pub fn as_get_fill_structures(&self) -> Option<&FillStructureData> {
+        if let JobType::FillStructure(ref data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_mut_get_fill_structures(&mut self) -> Option<&mut FillStructureData> {
+        if let JobType::FillStructure(ref mut data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_upgrade_controller(&self) -> Option<&ObjectId<StructureController>> {
+        if let JobType::UpgradeController(ref data) = self {
+            Some(data)
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]

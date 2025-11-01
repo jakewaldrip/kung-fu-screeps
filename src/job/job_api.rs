@@ -86,8 +86,6 @@ pub fn get_static_mining_job(room: &Room, creep: &Creep) -> Option<Job> {
 
         let creep_job = valid_jobs.swap_remove(creep_job_index);
         update_fn(creep_job);
-
-        // returns copy of the job, ownership cannot leave scope
         Some(*creep_job)
     })
 }
@@ -107,13 +105,12 @@ pub fn get_mining_job(room: &Room, creep: &Creep) -> Option<Job> {
             .filter(|job| job.job_type.as_self_mining().is_some())
             .collect();
 
-        // swap_remove will panic if vec is empty
         if valid_jobs.is_empty() {
             return None;
         }
 
         // find closest job to the creep
-        let creep_job = valid_jobs
+        let creep_job = *valid_jobs
             .iter()
             .min_by_key(|job| {
                 if let Some(source_id) = job.job_type.as_self_mining() {
@@ -123,13 +120,13 @@ pub fn get_mining_job(room: &Room, creep: &Creep) -> Option<Job> {
                     unreachable!()
                 }
             })
+            .copied()
             .unwrap();
 
-        Some(**creep_job)
+        Some(creep_job)
     })
 }
 
-// TODO: complete
 pub fn get_energy_from_structure_job(room: &Room, creep: &Creep) -> Option<Job> {
     let update_fn = |job: &mut Job| {
         let creep_free_store = creep.store().get_free_capacity(Some(ResourceType::Energy)) as u32;
@@ -184,18 +181,79 @@ pub fn get_energy_from_structure_job(room: &Room, creep: &Creep) -> Option<Job> 
 
         let creep_job = valid_jobs.swap_remove(creep_job_index);
         update_fn(creep_job);
-
-        // returns copy of the job, ownership cannot leave scope
         Some(*creep_job)
     })
 }
 
-// TODO: complete
-pub fn get_fill_structures_job(_room: &Room, _creep: &Creep) -> Option<Job> {
-    todo!()
+pub fn get_fill_structures_job(room: &Room, creep: &Creep) -> Option<Job> {
+    let update_fn = |job: &mut Job| {
+        let creep_used_store = creep.store().get_used_capacity(Some(ResourceType::Energy));
+        if let Some(get_fill_structures_data) = job.job_type.as_mut_get_fill_structures() {
+            get_fill_structures_data.capacity_remaining = get_fill_structures_data
+                .capacity_remaining
+                .saturating_sub(creep_used_store);
+        }
+    };
+
+    ROOM_JOBS.with_borrow_mut(|room_jobs_memory| {
+        let room_jobs = room_jobs_memory.get_mut(&room.name()).or_else(|| {
+            warn!("Jobs not found for room: {}", room.name());
+            None
+        })?;
+
+        let jobs_of_type = &mut room_jobs.fill_structure_jobs;
+
+        let mut valid_jobs: Vec<&mut Job> = jobs_of_type
+            .iter_mut()
+            .filter(|job| job.job_type.as_get_fill_structures().is_some())
+            .collect();
+
+        // swap_remove will panic if vec is empty
+        if valid_jobs.is_empty() {
+            return None;
+        }
+
+        // find index of closest of the creep jobs to choose
+        let (creep_job_index, _) = valid_jobs
+            .iter()
+            .enumerate()
+            .min_by_key(|(_, job)| {
+                if let Some(get_fill_structures_job) = job.job_type.as_get_fill_structures() {
+                    let source =
+                        game::get_object_by_id_typed(&get_fill_structures_job.structure_id)
+                            .unwrap();
+                    creep.pos().get_range_to(source.pos())
+                } else {
+                    unreachable!()
+                }
+            })
+            .unwrap();
+
+        let creep_job = valid_jobs.swap_remove(creep_job_index);
+        update_fn(creep_job);
+        Some(*creep_job)
+    })
 }
 
-// TODO: complete
-pub fn get_upgrade_controller_job(_room: &Room) -> Option<Job> {
-    todo!()
+pub fn get_upgrade_controller_job(room: &Room) -> Option<Job> {
+    ROOM_JOBS.with_borrow_mut(|room_jobs_memory| {
+        let room_jobs = room_jobs_memory.get_mut(&room.name()).or_else(|| {
+            warn!("Jobs not found for room: {}", room.name());
+            None
+        })?;
+
+        let jobs_of_type = &mut room_jobs.upgrade_jobs;
+
+        let valid_jobs: Vec<&Job> = jobs_of_type
+            .iter()
+            .filter(|job| job.job_type.as_upgrade_controller().is_some())
+            .collect();
+
+        if valid_jobs.is_empty() {
+            return None;
+        }
+
+        let creep_job = valid_jobs.first().unwrap();
+        Some(**creep_job)
+    })
 }

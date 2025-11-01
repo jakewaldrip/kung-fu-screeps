@@ -4,14 +4,17 @@ use std::str::FromStr;
 
 use crate::{
     creep::roles::roles_api::{get_creep_behavior_impl, Roles},
-    job::{job_api::is_job_done, job_utils::get_creeps_current_job},
+    job::{
+        job_api::is_job_done,
+        job_utils::{creep_clear_job, get_creeps_current_job},
+    },
     memory::creep_memory::CreepMemory,
 };
 
 pub fn run_creep_manager() {
     for creep in game::creeps().values() {
         if creep.spawning() {
-            return ;
+            return;
         }
 
         let creep_memory = CreepMemory::get(&creep);
@@ -24,6 +27,7 @@ pub fn run_creep_manager() {
         let job = get_creeps_current_job(&creep.name())
             .and_then(|job| {
                 if is_job_done(&creep, &job) {
+                    creep_clear_job(&creep);
                     creep_behavior_impl.get_job(&room)
                 } else {
                     Some(job)
