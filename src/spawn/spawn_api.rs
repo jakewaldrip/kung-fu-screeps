@@ -27,33 +27,38 @@ fn get_spawn_limits(room: &Room, room_state: &RoomState) -> HashMap<Roles, u8> {
     spawn_limits
 }
 
+fn get_spawn_priority(room_state: &RoomState, creep_counts: &HashMap<Roles, u8>) -> Vec<Roles> {
+    match room_state {
+        RoomState::Bootstrap => vec![Roles::Carrier, Roles::Miner],
+        RoomState::Basic => {
+            let carrier_count = *creep_counts.get(&Roles::Carrier).unwrap_or(&0);
+            if carrier_count == 0 {
+                vec![Roles::Carrier, Roles::Miner]
+            } else {
+                vec![Roles::Miner, Roles::Carrier]
+            }
+        }
+    }
+}
+
 pub fn get_next_role_to_spawn(room: &Room) -> Option<Roles> {
     let room_memory = RoomMemory::get(room);
     let room_state = room_memory.room_state;
 
     // Get spawn limits
     let spawn_limits = get_spawn_limits(room, &room_state);
-    let miner_limit = spawn_limits.get(&Roles::Miner).unwrap();
-    let carrier_limit = spawn_limits.get(&Roles::Carrier).unwrap();
 
     // Get creep counts
     let creep_counts = get_living_creep_counts(room);
-    let miner_count = creep_counts.get(&Roles::Miner).unwrap_or(&0);
-    let carrier_count = creep_counts.get(&Roles::Carrier).unwrap_or(&0);
 
-    // Spawn Creeps
-    if room_state == RoomState::Bootstrap && carrier_count < carrier_limit {
-        return Some(Roles::Carrier);
-    }
+    let priority = get_spawn_priority(&room_state, &creep_counts);
 
-    // TODO can probably get a priority list of creeps for room state
-    // and iterate through it to do this part, worth looking into
-    if *miner_count < *miner_limit {
-        return Some(Roles::Miner);
-    }
-
-    if *carrier_count < *carrier_limit {
-        return Some(Roles::Carrier);
+    for role in priority {
+        let limit = spawn_limits.get(&role).unwrap();
+        let count = creep_counts.get(&role).unwrap_or(&0);
+        if *count < *limit {
+            return Some(role);
+        }
     }
 
     None
