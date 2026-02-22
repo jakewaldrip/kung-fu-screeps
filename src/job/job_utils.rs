@@ -1,5 +1,5 @@
 use screeps::{
-    Creep, ObjectId, Part, ResourceType, SharedCreepProperties, Source, StructureObject,
+    BodyPart, Creep, ObjectId, Part, ResourceType, SharedCreepProperties, Source, StructureObject,
     StructureProperties, StructureType,
 };
 
@@ -61,7 +61,26 @@ pub fn get_work_parts_assigned_to_source(creeps: &[Creep], source_id: &ObjectId<
     work_parts_assigned.max(WORK_PARTS_PER_SOURCE)
 }
 
-// TODO: complete this
 pub fn get_carry_capacity_assigned_to_object<T>(creeps: &[Creep], object_id: &ObjectId<T>) -> u32 {
-    todo!()
+    let mut carry_capacity_assigned: u32 = 0;
+    for creep in creeps {
+        match get_creeps_current_job(&creep.name()) {
+            Some(creep_job) => {
+                if let JobType::GetDroppedEnergy(job_data) = creep_job.job_type {
+                    if job_data.resource_id.to_string() == object_id.to_string() {
+                        carry_capacity_assigned +=
+                            creep.store().get_free_capacity(Some(ResourceType::Energy)) as u32;
+                    }
+                } else if let JobType::FillStructure(job_data) = creep_job.job_type {
+                    if job_data.structure_id.to_string() == object_id.to_string() {
+                        carry_capacity_assigned +=
+                            creep.store().get_free_capacity(Some(ResourceType::Energy)) as u32;
+                    }
+                }
+            }
+            None => continue,
+        }
+    }
+
+    carry_capacity_assigned
 }
